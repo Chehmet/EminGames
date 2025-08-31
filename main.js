@@ -4,8 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const PARENT_PASSWORD = '1994';
     let currentKid = 'emin';
     const MAX_FAILED_ATTEMPTS_FOR_PENALTY = 5;
-    const MAX_FAILED_ATTEMPTS_FOR_LOCKOUT = 3;
-    const LOCKOUT_DURATION_MINUTES = 10;
     
     const themeSwitcher = document.getElementById('theme-switcher');
     const greetingEl = document.getElementById('greeting');
@@ -85,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await response.json();
                 showPasswordFeedback(result.error || 'Server error, could not add time.', "error");
             } else {
-                localStorage.removeItem('lockoutEndTime');
                 modalTitle.classList.add('hidden');
                 modalMessage.classList.add('hidden');
                 passwordInput.classList.add('hidden');
@@ -141,36 +138,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ИЗМЕНЕНО: Удалена логика блокировки (lockout)
     function handleFailedAttempt(kidName) {
         const attemptsKey = `failedAttempts_${kidName}`;
         let attempts = parseInt(localStorage.getItem(attemptsKey) || '0', 10);
         attempts++;
         if (attempts === MAX_FAILED_ATTEMPTS_FOR_PENALTY) {
             applyPenalty(kidName);
-            localStorage.setItem(attemptsKey, '0');
+            localStorage.setItem(attemptsKey, '0'); // Сбрасываем счетчик после штрафа
         } else {
             localStorage.setItem(attemptsKey, attempts);
         }
-        if (attempts >= MAX_FAILED_ATTEMPTS_FOR_LOCKOUT) {
-            const lockoutEndTime = Date.now() + (LOCKOUT_DURATION_MINUTES * 60 * 1000);
-            localStorage.setItem('lockoutEndTime', lockoutEndTime);
-            checkLockoutStatus();
-        }
     }
     
-    function checkLockoutStatus() {
-        const lockoutEndTime = parseInt(localStorage.getItem('lockoutEndTime') || '0', 10);
-        if (Date.now() < lockoutEndTime) {
-            const remainingMinutes = Math.ceil((lockoutEndTime - Date.now()) / 60000);
-            showPasswordFeedback(`Too many attempts. Try again in ${remainingMinutes} minutes.`, 'error');
-            passwordInput.disabled = true;
-            confirmPasswordBtn.disabled = true;
-            return true;
-        }
-        localStorage.removeItem('lockoutEndTime');
-        return false;
-    }
-
     function showPasswordFeedback(message, type) {
         passwordFeedbackEl.textContent = message;
         passwordFeedbackEl.className = 'password-feedback';
@@ -192,9 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showPasswordModal() {
         resetPasswordModal();
         passwordModalOverlay.classList.remove('hidden');
-        if (!checkLockoutStatus()) {
-             passwordInput.focus();
-        }
+        passwordInput.focus();
     }
 
     function hidePasswordModal() {

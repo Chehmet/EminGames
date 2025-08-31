@@ -1,25 +1,37 @@
+/* --- ЦВЕТОВЫЕ ПЕРЕМЕННЫЕ --- */
 :root {
-    --bg-color: #87CEEB;
+    /* Светлая тема (дневное небо) */
+    --bg-color: #87ceeb;
     --card-bg-color: #ffffff;
     --text-color: #333333;
     --header-text-color: #ffffff;
-    --accent-color-1: #FF6347;
-    --button-green-bg: #32CD32;
-    --button-green-shadow: #228B22;
-    --pot-color: #8B4513;
-    --stem-color: #228B22;
+    --accent-color-1: #FF6347; /* Ярко-оранжевый */
+    --accent-color-2: #32CD32; /* Ярко-зеленый */
+    --shadow-color: #228B22;   /* Тень для зеленой кнопки */
+    --pot-color: #A0522D;      /* Горшок */
+    --stem-color: #228B22;     /* Стебель */
     --modal-btn-cancel-bg: #cccccc;
+    --track-color: #777777;
+    --kid-btn-border: #ffffff;
 }
+
 body.dark-theme {
-    --bg-color: #2c3e50;
-    --card-bg-color: #34495e;
-    --text-color: #ecf0f1;
-    --header-text-color: #ecf0f1;
-    --accent-color-1: #e74c3c;
-    --pot-color: #6E3B10;
-    --stem-color: #27ae60;
-    --modal-btn-cancel-bg: #7f8c8d;
+    /* Темная тема (ночное небо) */
+    --bg-color: #1D2B53; /* Глубокий темно-синий */
+    --card-bg-color: #293662; /* Чуть светлее для карточек */
+    --text-color: #E0E0E0; /* Мягкий белый */
+    --header-text-color: #FFFFFF;
+    --accent-color-1: #FF77A8; /* Неоновый розовый */
+    --accent-color-2: #00FFCD; /* Бирюзовый/мятный */
+    --shadow-color: #00A383;   /* Тень для бирюзовой кнопки */
+    --pot-color: #593d2b;      /* Темный горшок */
+    --stem-color: #32a852;     /* Более яркий зеленый стебель */
+    --modal-btn-cancel-bg: #4B5A88;
+    --track-color: #4B5A88;
+    --kid-btn-border: #7A89B8;
 }
+/* ----------------------------- */
+
 body {
     font-family: 'Fredoka One', cursive;
     background-color: var(--bg-color);
@@ -27,73 +39,84 @@ body {
     text-align: center;
     margin: 0;
     padding: 20px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.4s ease, color 0.4s ease;
 }
+
 header { position: relative; }
-.theme-switcher-container { position: absolute; top: 0; right: 0; }
+.theme-switcher-container { position: absolute; top: 10px; right: 10px; z-index: 5; }
 #theme-switcher {
-    background-color: rgba(255, 255, 255, 0.2);
-    border: 2px solid var(--header-text-color);
+    background: none;
+    border: none;
     color: var(--header-text-color);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.5em;
+    width: 50px;
+    height: 50px;
+    font-size: 2em;
     cursor: pointer;
     transition: all 0.3s ease;
 }
-#theme-switcher:hover { background-color: rgba(255, 255, 255, 0.4); transform: scale(1.1) rotate(15deg); }
+#theme-switcher:hover { transform: scale(1.1) rotate(20deg); }
 header h1 { color: var(--header-text-color); font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+
 main { display: flex; justify-content: center; flex-wrap: wrap; }
 .time-card, .log-time-card, .password-modal {
     background-color: var(--card-bg-color);
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     width: 90%;
     max-width: 500px;
     position: relative;
     overflow: hidden;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .time-card h2 { font-size: 1.8em; color: var(--accent-color-1); margin-top: 0; }
-.message { font-size: 1.2em; margin-bottom: 20px; min-height: 50px; }
+.message { font-size: 1.3em; margin-bottom: 20px; min-height: 50px; line-height: 1.4; }
 .visualizer { padding: 20px 0; margin-top: 30px; }
-.race-track { background-color: #777; height: 50px; border-radius: 25px; border: 5px solid #555; position: relative; display: flex; align-items: center; }
+
+.race-track { background-color: var(--track-color); height: 50px; border-radius: 25px; border: none; position: relative; display: flex; align-items: center; }
 .car { position: absolute; left: 0; transition: left 1s ease-in-out; }
 .car img { height: 60px; transform: translateY(-5px); }
 .finish-line { position: absolute; right: 10px; height: 40px; }
-.times-up-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); color: white; display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 10; }
+
+.times-up-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(5px); background-color: rgba(0, 0, 0, 0.6); color: white; display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 10; }
 .times-up-content span { font-size: 5em; }
 .times-up-content p { font-size: 1.5em; }
+
 .book-bonus { margin-top: 40px; }
-#read-book-btn { font-family: 'Fredoka One', cursive; font-size: 1.5em; padding: 15px 30px; border-radius: 15px; border: none; background-color: var(--button-green-bg); color: white; cursor: pointer; box-shadow: 0 5px var(--button-green-shadow); transition: all 0.1s ease-in-out; }
-#read-book-btn:active { transform: translateY(3px); box-shadow: 0 2px var(--button-green-shadow); }
+#read-book-btn { font-family: 'Fredoka One', cursive; font-size: 1.5em; padding: 15px 30px; border-radius: 15px; border: none; background-color: var(--accent-color-2); color: var(--card-bg-color); font-weight: bold; cursor: pointer; box-shadow: 0 5px var(--shadow-color); transition: all 0.1s ease-in-out; }
+#read-book-btn:active { transform: translateY(3px); box-shadow: 0 2px var(--shadow-color); }
+
 .hidden { display: none !important; }
 .kid-switcher { margin-bottom: 20px; }
-.kid-btn { font-family: 'Fredoka One', cursive; font-size: 1.2em; padding: 10px 25px; border: 3px solid var(--header-text-color); background-color: transparent; color: var(--header-text-color); border-radius: 20px; cursor: pointer; margin: 0 10px; transition: all 0.2s ease; }
+.kid-btn { font-family: 'Fredoka One', cursive; font-size: 1.2em; padding: 10px 25px; border: 3px solid var(--kid-btn-border); background-color: transparent; color: var(--header-text-color); border-radius: 20px; cursor: pointer; margin: 0 10px; transition: all 0.2s ease; }
 .kid-btn.active { background-color: var(--header-text-color); color: var(--accent-color-1); }
 
-/* Стили для простого цветка */
-#samira-visualizer { margin-top: 100px; }
-.flower-pot { background-color: var(--pot-color); width: 100px; height: 80px; margin: 40px auto 0; border-radius: 0 0 40px 40px; position: relative; transition: background-color 0.3s ease; }
-.flower-stem { background-color: var(--stem-color); width: 15px; height: 0; position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); border-radius: 10px 10px 0 0; transition: height 1s ease-in-out, background-color 0.3s ease; }
-.flower-head { font-size: 70px; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); }
+#samira-visualizer { margin-top: 110px; }
+.flower-pot { background-color: var(--pot-color); width: 100px; height: 80px; margin: 40px auto 0; border-radius: 0 0 40px 40px; position: relative; transition: background-color 0.4s ease; }
+.flower-stem { background-color: var(--stem-color); width: 15px; height: 0; position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); border-radius: 10px 10px 0 0; transition: height 1s ease-in-out, background-color 0.4s ease; }
+.flower-head { font-size: 70px; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); animation: gentle-bob 4s ease-in-out infinite; }
+@keyframes gentle-bob { 0%, 100% { transform: translateX(-50%) rotate(0deg); } 50% { transform: translateX(-50%) rotate(3deg); } }
+
 
 .log-time-card { margin: 20px auto; }
 #minutes-watched-input { width: 100px; font-size: 1.5em; text-align: center; border: 2px solid #ddd; border-radius: 10px; padding: 5px; }
 #log-time-btn { font-family: 'Fredoka One', cursive; font-size: 1.2em; padding: 10px 20px; border-radius: 10px; border: none; background-color: var(--accent-color-1); color: white; cursor: pointer; margin-left: 10px; }
+
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 1; transition: opacity 0.3s ease; }
 .modal-overlay.hidden { opacity: 0; pointer-events: none; }
 .password-modal h3 { margin-top: 0; color: var(--text-color); }
 #password-input { width: 80%; padding: 10px; font-size: 1.5em; text-align: center; border: 2px solid #ddd; border-radius: 10px; margin: 15px 0; }
 .modal-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
 .modal-buttons button { font-family: 'Fredoka One', cursive; font-size: 1.1em; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; }
-#confirm-password-btn { background-color: var(--button-green-bg); color: white; }
+#confirm-password-btn { background-color: var(--accent-color-2); color: var(--bg-color); font-weight: bold; }
 #cancel-password-btn { background-color: var(--modal-btn-cancel-bg); color: var(--text-color); }
 .close-btn { position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 2em; color: #aaa; cursor: pointer; line-height: 1; padding: 0; }
 .close-btn:hover { color: var(--text-color); }
 .password-feedback { font-size: 1.1em; font-weight: bold; margin-top: -10px; margin-bottom: 15px; min-height: 1.2em; transition: all 0.3s ease; }
 .password-feedback.error { color: #e74c3c; }
-.password-feedback.success { color: #2ecc71; font-size: 1.3em; }
+.password-feedback.success { color: #00FFCD; font-size: 1.3em; }
 :disabled { opacity: 0.5; cursor: not-allowed; }
