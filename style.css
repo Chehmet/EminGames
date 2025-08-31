@@ -128,8 +128,8 @@ main {
 .flower-pot {
     background-color: #8B4513;
     width: 100px;
-    height: 140px;
-    margin: 40px auto 0;
+    height: 80px;
+    margin: 100px auto 0;
     border-radius: 0 0 40px 40px;
     position: relative;
 }
