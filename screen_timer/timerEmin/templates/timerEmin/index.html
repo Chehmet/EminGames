@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids' Time Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <header>
+        <div class="kid-switcher">
+            <button id="switch-emin" class="kid-btn active">Emin</button>
+            <button id="switch-samira" class="kid-btn">Samira</button>
+        </div>
+        <h1 id="greeting">Hi, Emin! 👋 Let's check your time!</h1>
+    </header>
+
+    <main>
+        <div class="time-card">
+            <h2 id="card-title">TV & Cartoons Today 📺</h2>
+            <div class="message" id="time-message">Loading...</div>
+            
+            <!-- Визуализатор для Эмина (машинка) -->
+            <div class="visualizer" id="emin-visualizer">
+                <div class="race-track">
+                    <div class="car" id="cartoon-car">
+                        <img src="{% static 'images/car.png' %}" alt="Race Car">
+                    </div>
+                    <img class="finish-line" src="{% static 'images/finish.png' %}" alt="Finish Line">
+                </div>
+            </div>
+
+            <!-- Визуализатор для Самиры (цветок) -->
+            <div class="visualizer hidden" id="samira-visualizer">
+                <div class="flower-pot">
+                    <div class="flower-stem" id="flower-stem">
+                        <div class="flower-head">🌸</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Экран, когда время вышло -->
+            <div class="times-up-overlay" id="times-up-overlay">
+                <div class="times-up-content">
+                    <span>😞</span>
+                    <p>Oh no! No more time for today.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Форма для списания времени -->
+    <div class="log-time-card">
+        <h3>How many minutes did you watch?</h3>
+        <input type="number" id="minutes-watched-input" min="1" placeholder="e.g., 25">
+        <button id="log-time-btn">I'm Done!</button>
+    </div>
+
+    <!-- Кнопка для бонуса -->
+    <div class="book-bonus">
+        <button id="read-book-btn">I read a book! 📖 (+10 min)</button>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

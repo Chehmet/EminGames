@@ -46,6 +46,7 @@ main {
 
 .visualizer {
     padding: 20px 0;
+    margin-top: 100px;
 }
 
 .race-track {
@@ -119,4 +120,88 @@ main {
 #read-book-btn:active {
     transform: translateY(3px);
     box-shadow: 0 2px #228B22;
+}
+
+
+
+.hidden {
+    display: none !important;
+}
+
+/* Переключатель детей */
+.kid-switcher {
+    margin-bottom: 20px;
+}
+.kid-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2em;
+    padding: 10px 25px;
+    border: 3px solid white;
+    background-color: transparent;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: all 0.2s ease;
+}
+.kid-btn.active {
+    background-color: white;
+    color: #FF6347; /* Томатный */
+}
+
+/* Визуализатор цветка */
+.flower-pot {
+    background-color: #8B4513; /* Цвет горшка */
+    width: 100px;
+    height: 80px;
+    margin: 40px auto 0;
+    border-radius: 0 0 40px 40px;
+    position: relative;
+}
+.flower-stem {
+    background-color: #228B22; /* Цвет стебля */
+    width: 15px;
+    height: 0; /* Изначально 0, будет расти с помощью JS */
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10px 10px 0 0;
+    transition: height 1s ease-in-out;
+}
+.flower-head {
+    font-size: 50px;
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Карточка для списания времени */
+.log-time-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 20px;
+    margin: 20px auto;
+    max-width: 500px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+#minutes-watched-input {
+    width: 100px;
+    font-size: 1.5em;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 5px;
+}
+#log-time-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2em;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background-color: #FF6347;
+    color: white;
+    cursor: pointer;
+    margin-left: 10px;
 }
