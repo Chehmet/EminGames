@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- ГЛАВНАЯ КОНФИГУРАЦИЯ ---
-    const API_BASE_URL = 'https://backend.gcrm.online/api/v1/finance'; // <-- Прямой адрес вашего API
+    const API_BASE_URL = 'https://backend.gcrm.online/api/v1/finance/; // <-- Прямой адрес вашего API
 
     // --- ГЛОБАЛЬНОЕ СОСТОЯНИЕ ---
     let currentKid = 'emin';
@@ -183,12 +183,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const timeUsedPercentage = ((total_minutes - remaining_minutes) / total_minutes) * 100;
         const cappedPercentage = Math.max(0, Math.min(100, timeUsedPercentage));
-        if (kidName === 'emin') {
+        if (kidName === 'Emin') {
             eminVisualizer.classList.remove('hidden');
             samiraVisualizer.classList.add('hidden');
             cardTitleEl.innerHTML = 'TV & Cartoons Today 📺';
             carEl.style.left = `${cappedPercentage * 0.85}%`;
-        } else if (kidName === 'samira') {
+        } else if (kidName === 'Samira') {
             samiraVisualizer.classList.remove('hidden');
             eminVisualizer.classList.add('hidden');
             cardTitleEl.innerHTML = 'Grow your Flower 🌸';
