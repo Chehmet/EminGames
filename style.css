@@ -75,10 +75,10 @@ main { display: flex; justify-content: center; flex-wrap: wrap; }
 .kid-btn.active { background-color: var(--header-text-color); color: var(--accent-color-1); }
 
 /* Стили для простого цветка */
-#samira-visualizer { margin-top: 80px; }
+#samira-visualizer { margin-top: 100px; }
 .flower-pot { background-color: var(--pot-color); width: 100px; height: 80px; margin: 40px auto 0; border-radius: 0 0 40px 40px; position: relative; transition: background-color 0.3s ease; }
 .flower-stem { background-color: var(--stem-color); width: 15px; height: 0; position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); border-radius: 10px 10px 0 0; transition: height 1s ease-in-out, background-color 0.3s ease; }
-.flower-head { font-size: 50px; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); }
+.flower-head { font-size: 70px; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); }
 
 .log-time-card { margin: 20px auto; }
 #minutes-watched-input { width: 100px; font-size: 1.5em; text-align: center; border: 2px solid #ddd; border-radius: 10px; padding: 5px; }
