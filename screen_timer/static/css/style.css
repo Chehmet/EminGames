@@ -205,3 +205,119 @@ main {
     cursor: pointer;
     margin-left: 10px;
 }
+
+
+.modal-overlay {
+    position: fixed; /* Поверх всего */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* Скрываем оверлей по умолчанию */
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none; /* Нельзя кликнуть на невидимый элемент */
+}
+
+.password-modal {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+.password-modal h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#password-input {
+    width: 80%;
+    padding: 10px;
+    font-size: 1.5em;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1em;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+#confirm-password-btn {
+    background-color: #32CD32; /* Лаймово-зеленый */
+    color: white;
+}
+
+#cancel-password-btn {
+    background-color: #ccc;
+    color: #333;
+}
+
+.password-modal {
+    position: relative; /* Очень важно! */
+    /* ... (остальные стили .password-modal) ... */
+}
+
+/* Стили для кнопки "закрыть" (крестик) */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 2em; /* Делаем крестик большим и заметным */
+    color: #aaa;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+.close-btn:hover {
+    color: #333;
+}
+
+
+.password-feedback {
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    height: 1.2em; /* Резервируем место, чтобы окно не "прыгало" */
+    transition: color 0.3s ease;
+}
+
+/* Добавляем стили для разных состояний */
+.password-feedback.error {
+    color: #e74c3c; /* Красный цвет для ошибки */
+}
+
+.password-feedback.success {
+    color: #2ecc71; /* Зеленый цвет для успеха */
+}
+
+/* ... (остальные стили модального окна) ... */

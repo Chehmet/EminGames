@@ -67,5 +67,24 @@
     </div>
 
     <script src="{% static 'js/main.js' %}"></script>
+
+        <div class="modal-overlay hidden" id="password-modal-overlay">
+        <div class="password-modal">
+            <button class="close-btn" id="close-modal-btn">&times;</button>
+            
+            <!-- Этот блок будет меняться динамически -->
+            <div id="modal-content-wrapper">
+                <h3 id="modal-title">Parents Only! 🔐</h3>
+                <p id="modal-message">Please enter the password to add 10 minutes.</p>
+                <p class="password-feedback hidden" id="password-feedback"></p>
+                <input type="password" id="password-input" placeholder="••••••••">
+            </div>
+
+            <div class="modal-buttons" id="modal-buttons">
+                <button id="cancel-password-btn">Cancel</button>
+                <button id="confirm-password-btn">Add Time</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
