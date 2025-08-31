@@ -9,7 +9,7 @@ import json
 # TOTAL_MINUTES - сколько всего минут в день. REMAINING_MINUTES - сколько осталось.
 KID_DATA = {
     'emin': {'total_minutes': 60, 'remaining_minutes': 60},
-    'samira': {'total_minutes': 45, 'remaining_minutes': 45},
+    'samira': {'total_minutes': 60, 'remaining_minutes': 60},
 }
 PARENT_PASSWORD = "1994"
 
