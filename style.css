@@ -1,84 +1,24 @@
-/* --- ОПРЕДЕЛЕНИЕ ЦВЕТОВЫХ ПЕРЕМЕННЫХ --- */
-:root {
-    --bg-color: #87CEEB;
-    --card-bg-color: #ffffff;
-    --text-color: #333333;
-    --header-text-color: #ffffff;
-    --accent-color-1: #FF6347;
-    --button-green-bg: #32CD32;
-    --button-green-shadow: #228B22;
-    --track-color: #777777;
-    --track-border: #555555;
-    --pot-color: #D2691E;
-    --pot-rim-color: #A0522D;
-    --modal-btn-cancel-bg: #cccccc;
-}
-
-body.dark-theme {
-    --bg-color: #2c3e50;
-    --card-bg-color: #34495e;
-    --text-color: #ecf0f1;
-    --header-text-color: #ecf0f1;
-    --accent-color-1: #e74c3c;
-    --track-color: #5d6d7e;
-    --track-border: #34495e;
-    --pot-color: #8B4513;
-    --pot-rim-color: #A0522D;
-    --modal-btn-cancel-bg: #7f8c8d;
-}
-/* ----------------------------------------- */
-
 body {
     font-family: 'Fredoka One', cursive;
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    background-color: #87CEEB;
+    color: #333;
     text-align: center;
     margin: 0;
     padding: 20px;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
-
-header {
-    position: relative;
-}
-
-.theme-switcher-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-
-#theme-switcher {
-    background-color: rgba(255, 255, 255, 0.2);
-    border: 2px solid var(--header-text-color);
-    color: var(--header-text-color);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.5em;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-#theme-switcher:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-    transform: scale(1.1) rotate(15deg);
-}
-
 header h1 {
-    color: var(--header-text-color);
+    color: white;
     font-size: 2.5em;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
-
 main {
     display: flex;
     justify-content: center;
+    gap: 40px;
     flex-wrap: wrap;
 }
-
-.time-card, .log-time-card, .password-modal {
-    background-color: var(--card-bg-color);
+.time-card {
+    background-color: white;
     border-radius: 20px;
     padding: 20px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
@@ -86,49 +26,44 @@ main {
     max-width: 500px;
     position: relative;
     overflow: hidden;
-    transition: background-color 0.3s ease;
 }
-
 .time-card h2 {
     font-size: 1.8em;
-    color: var(--accent-color-1);
+    color: #FF6347;
     margin-top: 0;
 }
-
 .message {
     font-size: 1.2em;
     margin-bottom: 20px;
     min-height: 50px;
 }
-
 .visualizer {
     padding: 20px 0;
-    margin-top: 30px;
-}
-
-/* ИСПРАВЛЕНИЕ: Увеличиваем отступ только для цветка Самиры */
-#samira-visualizer {
     margin-top: 80px;
 }
-
 .race-track {
-    background-color: var(--track-color);
-    border: 5px solid var(--track-border);
+    background-color: #777;
     height: 50px;
     border-radius: 25px;
+    border: 5px solid #555;
     position: relative;
     display: flex;
     align-items: center;
 }
-
 .car {
     position: absolute;
     left: 0;
     transition: left 1s ease-in-out;
 }
-.car img { height: 60px; transform: translateY(-5px); }
-.finish-line { position: absolute; right: 10px; height: 40px; }
-
+.car img {
+    height: 60px;
+    transform: translateY(-5px);
+}
+.finish-line {
+    position: absolute;
+    right: 10px;
+    height: 40px;
+}
 .times-up-overlay {
     position: absolute;
     top: 0;
@@ -143,47 +78,87 @@ main {
     flex-direction: column;
     z-index: 10;
 }
-.times-up-content span { font-size: 5em; }
-.times-up-content p { font-size: 1.5em; }
-
-.book-bonus { margin-top: 40px; }
+.times-up-content span {
+    font-size: 5em;
+}
+.times-up-content p {
+    font-size: 1.5em;
+}
+.book-bonus {
+    margin-top: 40px;
+}
 #read-book-btn {
     font-family: 'Fredoka One', cursive;
     font-size: 1.5em;
     padding: 15px 30px;
     border-radius: 15px;
     border: none;
-    background-color: var(--button-green-bg);
+    background-color: #32CD32;
     color: white;
     cursor: pointer;
-    box-shadow: 0 5px var(--button-green-shadow);
+    box-shadow: 0 5px #228B22;
     transition: all 0.1s ease-in-out;
 }
 #read-book-btn:active {
     transform: translateY(3px);
-    box-shadow: 0 2px var(--button-green-shadow);
+    box-shadow: 0 2px #228B22;
 }
-.hidden { display: none !important; }
-
-.kid-switcher { margin-bottom: 20px; }
+.hidden {
+    display: none !important;
+}
+.kid-switcher {
+    margin-bottom: 20px;
+}
 .kid-btn {
     font-family: 'Fredoka One', cursive;
     font-size: 1.2em;
     padding: 10px 25px;
-    border: 3px solid var(--header-text-color);
+    border: 3px solid white;
     background-color: transparent;
-    color: var(--header-text-color);
+    color: white;
     border-radius: 20px;
     cursor: pointer;
     margin: 0 10px;
     transition: all 0.2s ease;
 }
 .kid-btn.active {
-    background-color: var(--header-text-color);
-    color: var(--accent-color-1);
+    background-color: white;
+    color: #FF6347;
 }
-
-.log-time-card { margin: 20px auto; }
+.flower-pot {
+    background-color: #8B4513;
+    width: 100px;
+    height: 80px;
+    margin: 40px auto 0;
+    border-radius: 0 0 40px 40px;
+    position: relative;
+}
+.flower-stem {
+    background-color: #228B22;
+    width: 15px;
+    height: 0;
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10px 10px 0 0;
+    transition: height 1s ease-in-out;
+}
+.flower-head {
+    font-size: 50px;
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.log-time-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 20px;
+    margin: 20px auto;
+    max-width: 500px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
 #minutes-watched-input {
     width: 100px;
     font-size: 1.5em;
@@ -198,61 +173,105 @@ main {
     padding: 10px 20px;
     border-radius: 10px;
     border: none;
-    background-color: var(--accent-color-1);
+    background-color: #FF6347;
     color: white;
     cursor: pointer;
     margin-left: 10px;
 }
-
 .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 1000; opacity: 1; transition: opacity 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
-.modal-overlay.hidden { opacity: 0; pointer-events: none; }
-.password-modal h3 { margin-top: 0; color: var(--text-color); }
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.password-modal {
+    position: relative;
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+.password-modal h3 {
+    margin-top: 0;
+    color: #333;
+}
 #password-input {
-    width: 80%; padding: 10px; font-size: 1.5em; text-align: center;
-    border: 2px solid #ddd; border-radius: 10px; margin: 15px 0;
+    width: 80%;
+    padding: 10px;
+    font-size: 1.5em;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    margin: 15px 0;
 }
-.modal-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
 .modal-buttons button {
-    font-family: 'Fredoka One', cursive; font-size: 1.1em;
-    padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1em;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
 }
-#confirm-password-btn { background-color: var(--button-green-bg); color: white; }
-#cancel-password-btn { background-color: var(--modal-btn-cancel-bg); color: var(--text-color); }
+#confirm-password-btn {
+    background-color: #32CD32;
+    color: white;
+}
+#cancel-password-btn {
+    background-color: #ccc;
+    color: #333;
+}
 .close-btn {
-    position: absolute; top: 10px; right: 15px; background: transparent; border: none;
-    font-size: 2em; color: #aaa; cursor: pointer; line-height: 1; padding: 0;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 2em;
+    color: #aaa;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
 }
-.close-btn:hover { color: var(--text-color); }
+.close-btn:hover {
+    color: #333;
+}
 .password-feedback {
-    font-size: 1.1em; font-weight: bold; margin-top: -10px; margin-bottom: 15px;
-    min-height: 1.2em; transition: all 0.3s ease;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    min-height: 1.2em;
+    transition: all 0.3s ease;
 }
-.password-feedback.error { color: #e74c3c; }
-.password-feedback.success { color: #2ecc71; font-size: 1.3em; }
-:disabled { opacity: 0.5; cursor: not-allowed; }
-
-/* Стили для SVG-цветка */
-.flower-container { width: 100%; max-width: 250px; margin: 0 auto; height: 300px; }
-#flower-svg { width: 100%; height: 100%; }
-#flower-svg path, #flower-svg rect { transition: fill 0.3s ease; } /* Анимация смены темы для горшка */
-#flower-svg path[fill="#D2691E"] { fill: var(--pot-color); }
-#flower-svg rect[fill="#A0522D"] { fill: var(--pot-rim-color); }
-#flower-stem-group {
-    transform-origin: bottom center;
-    transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+.password-feedback.error {
+    color: #e74c3c;
 }
-#flower-head-group {
-    transform-origin: center;
-    transition: opacity 0.5s ease-in-out, transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    animation: gentle-bob 4s ease-in-out infinite;
+.password-feedback.success {
+    color: #2ecc71;
+    font-size: 1.3em;
 }
-@keyframes gentle-bob {
-    0% { transform: rotate(0deg) translateY(0px); }
-    50% { transform: rotate(2deg) translateY(-2px); }
-    100% { transform: rotate(0deg) translateY(0px); }
+:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

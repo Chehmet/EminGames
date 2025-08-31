@@ -1,11 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --- ГЛАВНАЯ КОНФИГУРАЦИЯ ---
     const API_BASE_URL = 'https://backend.gcrm.online/api/v1/finance';
-    const PARENT_PASSWORD = '1994';
+    const PARENT_PASSWORD = '1994'; // Пароль для проверки на фронтенде
+
+    // --- ГЛОБАЛЬНОЕ СОСТОЯНИЕ ---
     let currentKid = 'emin';
     const MAX_FAILED_ATTEMPTS = 3;
     const LOCKOUT_DURATION_MINUTES = 10;
 
+    // --- ЭЛЕМЕНТЫ DOM ---
     const greetingEl = document.getElementById('greeting');
     const cardTitleEl = document.getElementById('card-title');
     const timeMessageEl = document.getElementById('time-message');
@@ -13,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const eminVisualizer = document.getElementById('emin-visualizer');
     const carEl = document.getElementById('cartoon-car');
     const samiraVisualizer = document.getElementById('samira-visualizer');
-    const flowerStemEl = document.getElementById('flower-stem'); // Элемент для простого цветка
-    
+    const flowerStemEl = document.getElementById('flower-stem');
+
     const passwordModalOverlay = document.getElementById('password-modal-overlay');
     const modalTitle = document.getElementById('modal-title');
     const modalMessage = document.getElementById('modal-message');
@@ -27,11 +31,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sound = new Audio('sounds/time_up.mp3');
 
+    // --- ФУНКЦИИ API ---
+
     async function fetchKidData(kidName) {
         try {
             const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
             const response = await fetch(`${API_BASE_URL}/kidstatus/${formattedKidName}/`);
             if (!response.ok) throw new Error(`Network response was not ok. Status: ${response.status}`);
+            
             const data = await response.json();
             updateUI(kidName, data);
         } catch (error) {
@@ -42,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     async function submitBonusTime(kidName) {
         const password = passwordInput.value;
+        
         if (password !== PARENT_PASSWORD) {
             handleFailedAttempt();
             showPasswordFeedback("Incorrect password", "error");
@@ -49,24 +57,29 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordInput.focus();
             return;
         }
+
         try {
             const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
+            
             const response = await fetch(`${API_BASE_URL}/kidstatus/${formattedKidName}/`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ amount: 10 })
             });
+            
             if (!response.ok) {
                 const result = await response.json();
                 showPasswordFeedback(result.error || 'Server error, could not add time.', "error");
             } else {
                 localStorage.removeItem('failedAttempts');
                 localStorage.removeItem('lockoutEndTime');
+                
                 modalTitle.classList.add('hidden');
                 modalMessage.classList.add('hidden');
                 passwordInput.classList.add('hidden');
                 modalButtons.classList.add('hidden');
                 showPasswordFeedback("Success! 10 minutes added.", "success");
+                
                 setTimeout(() => {
                     hidePasswordModal();
                     fetchKidData(kidName);
@@ -81,25 +94,35 @@ document.addEventListener('DOMContentLoaded', () => {
     async function logWatchedTime(kidName) {
         const inputEl = document.getElementById('minutes-watched-input');
         const minutes = parseInt(inputEl.value, 10);
+
         if (isNaN(minutes) || minutes <= 0) {
             alert("Please enter a valid number of minutes.");
             return;
         }
+
         try {
             const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
+
             const response = await fetch(`${API_BASE_URL}/kidstatus/${formattedKidName}/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: -minutes })
             });
-            if (!response.ok) throw new Error('Failed to log time on the server.');
+
+            if (!response.ok) {
+                throw new Error('Failed to log time on the server.');
+            }
+
             inputEl.value = '';
             fetchKidData(kidName);
+
         } catch (error) {
             console.error('Error logging time:', error);
             alert("Oops! Could not save the time. Please try again.");
         }
     }
+
+    // --- УПРАВЛЕНИЕ БЛОКИРОВКОЙ И МОДАЛЬНЫМ ОКНОМ ---
     
     function handleFailedAttempt() {
         let attempts = parseInt(localStorage.getItem('failedAttempts') || '0', 10);
@@ -157,8 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
         passwordModalOverlay.classList.add('hidden');
     }
 
+    // --- ОБНОВЛЕНИЕ ГЛАВНОГО ИНТЕРФЕЙСА ---
     function updateUI(kidName, data) {
         greetingEl.innerHTML = `Hi, ${kidName.charAt(0).toUpperCase() + kidName.slice(1)}! 👋 Let's check your time!`;
+        
         const remaining_minutes = data.remaining_tv_minutes;
         const total_minutes = data.total_tv_minutes;
 
@@ -166,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timeMessageEl.innerText = 'Oops! Received invalid data from the server.';
             return;
         }
+
         if (remaining_minutes > 0) {
             timeMessageEl.innerHTML = `You can watch for <strong>${remaining_minutes}</strong> minutes.`;
             timesUpOverlay.classList.add('hidden');
@@ -187,12 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
             samiraVisualizer.classList.remove('hidden');
             eminVisualizer.classList.add('hidden');
             cardTitleEl.innerHTML = 'Grow your Flower 🌸';
-            
-            const growthPercentage = 100 - cappedPercentage;
-            flowerStemEl.style.height = `${growthPercentage / 100 * 150}px`; // Макс. высота стебля 150px
+            flowerStemEl.style.height = `${(100 - cappedPercentage) / 100 * 150}px`;
         }
     }
     
+    // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
     document.getElementById('switch-emin').addEventListener('click', () => { currentKid = 'emin'; document.getElementById('switch-emin').classList.add('active'); document.getElementById('switch-samira').classList.remove('active'); fetchKidData(currentKid); });
     document.getElementById('switch-samira').addEventListener('click', () => { currentKid = 'samira'; document.getElementById('switch-samira').classList.add('active'); document.getElementById('switch-emin').classList.remove('active'); fetchKidData(currentKid); });
     document.getElementById('read-book-btn').addEventListener('click', showPasswordModal);
@@ -203,5 +228,6 @@ document.addEventListener('DOMContentLoaded', () => {
     passwordModalOverlay.addEventListener('click', (event) => { if (event.target === passwordModalOverlay) { hidePasswordModal(); } });
     passwordInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); confirmPasswordBtn.click(); } });
 
+    // --- ПЕРВЫЙ ЗАПУСК ---
     fetchKidData(currentKid);
 });
