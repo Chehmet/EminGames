@@ -22,9 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-ev0qks9yg!ea46xl8xp4pp^a0^cb*)s8u+et^z_#4&2x%irrn_'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -120,11 +117,21 @@ USE_TZ = True
 STATIC_URL = 'static/'
 import os
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DEBUG = False 
+
+# Добавляем адрес вашего будущего сайта и 127.0.0.1
+ALLOWED_HOSTS = ['timeremin.onrender.com', '127.0.0.1'] # Замените 'timeremin' на свое имя
+
+# ... (остальные настройки)
+
+# Настройки для статических файлов в продакшене
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Render будет собирать сюда статику
