@@ -2,9 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- ГЛОБАЛЬНОЕ СОСТОЯНИЕ ---
     let currentKid = 'emin';
+    const MAX_FAILED_ATTEMPTS = 3;
+    const LOCKOUT_DURATION_MINUTES = 10;
 
     // --- ЭЛЕМЕНТЫ DOM ---
     const greetingEl = document.getElementById('greeting');
+    // ... (остальные элементы остаются такими же)
     const cardTitleEl = document.getElementById('card-title');
     const timeMessageEl = document.getElementById('time-message');
     const timesUpOverlay = document.getElementById('times-up-overlay');
@@ -13,9 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const samiraVisualizer = document.getElementById('samira-visualizer');
     const flowerStemEl = document.getElementById('flower-stem');
 
-    // Элементы модального окна
     const passwordModalOverlay = document.getElementById('password-modal-overlay');
-    const modalContentWrapper = document.getElementById('modal-content-wrapper');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
     const modalButtons = document.getElementById('modal-buttons');
     const passwordInput = document.getElementById('password-input');
     const confirmPasswordBtn = document.getElementById('confirm-password-btn');
@@ -27,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- ФУНКЦИИ API ---
 
-    async function fetchKidData(kidName) {
+    async function fetchKidData(kidName) { /* ... эта функция без изменений ... */
         try {
             const response = await fetch(`/api/kidstatus/${kidName}/`);
             if (!response.ok) throw new Error('Network response was not ok');
@@ -55,19 +58,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (!response.ok) {
-                showPasswordFeedback(result.error || 'Something went wrong', "error");
+                // НЕПРАВИЛЬНЫЙ ПАРОЛЬ
+                handleFailedAttempt();
+                showPasswordFeedback(result.error || 'Incorrect password', "error");
                 passwordInput.value = '';
                 passwordInput.focus();
             } else {
-                // УСПЕХ! Показываем сообщение и закрываем окно через 1.5 секунды
-                showPasswordFeedback("Success! 10 minutes added.", "success");
-                modalContentWrapper.classList.add('hidden'); // Скрываем поля
+                // УСПЕХ
+                localStorage.removeItem('failedAttempts');
+                localStorage.removeItem('lockoutEndTime');
+                
+                // Скрываем ненужные элементы и показываем сообщение
+                modalTitle.classList.add('hidden');
+                modalMessage.classList.add('hidden');
+                passwordInput.classList.add('hidden');
                 modalButtons.classList.add('hidden');
+                showPasswordFeedback("Success! 10 minutes added.", "success");
                 
                 setTimeout(() => {
                     hidePasswordModal();
                     fetchKidData(kidName);
-                }, 1500); // Ждем 1.5 секунды
+                }, 2000); // Ждем 2 секунды, чтобы родители увидели сообщение
             }
         } catch (error) {
             showPasswordFeedback('Could not connect to the server.', "error");
@@ -75,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function logWatchedTime(kidName) {
+    async function logWatchedTime(kidName) { /* ... эта функция без изменений ... */
         const inputEl = document.getElementById('minutes-watched-input');
         const minutes = parseInt(inputEl.value, 10);
 
@@ -98,33 +109,73 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- УПРАВЛЕНИЕ МОДАЛЬНЫМ ОКНОМ ---
+    // --- УПРАВЛЕНИЕ БЛОКИРОВКОЙ И МОДАЛЬНЫМ ОКНОМ ---
+    
+    function handleFailedAttempt() {
+        let attempts = parseInt(localStorage.getItem('failedAttempts') || '0', 10);
+        attempts++;
+
+        if (attempts >= MAX_FAILED_ATTEMPTS) {
+            const lockoutEndTime = Date.now() + LOCKOUT_DURATION_MINUTES * 60 * 1000;
+            localStorage.setItem('lockoutEndTime', lockoutEndTime);
+            localStorage.removeItem('failedAttempts');
+            checkLockoutStatus(); // Обновляем UI сразу после блокировки
+        } else {
+            localStorage.setItem('failedAttempts', attempts);
+        }
+    }
+    
+    function checkLockoutStatus() {
+        const lockoutEndTime = parseInt(localStorage.getItem('lockoutEndTime') || '0', 10);
+        if (Date.now() < lockoutEndTime) {
+            const remainingMinutes = Math.ceil((lockoutEndTime - Date.now()) / 60000);
+            showPasswordFeedback(`Too many attempts. Try again in ${remainingMinutes} minutes.`, 'error');
+            passwordInput.disabled = true;
+            confirmPasswordBtn.disabled = true;
+            return true; // Возвращаем true, если заблокировано
+        }
+        // Если время блокировки прошло, очищаем
+        localStorage.removeItem('lockoutEndTime');
+        return false; // Возвращаем false, если не заблокировано
+    }
+
     function showPasswordFeedback(message, type) {
         passwordFeedbackEl.textContent = message;
-        passwordFeedbackEl.className = 'password-feedback'; // Сброс классов
-        passwordFeedbackEl.classList.add(type); // Добавляем 'error' или 'success'
+        passwordFeedbackEl.className = 'password-feedback';
+        passwordFeedbackEl.classList.add(type);
         passwordFeedbackEl.classList.remove('hidden');
     }
 
     function resetPasswordModal() {
         passwordFeedbackEl.classList.add('hidden');
         passwordInput.value = '';
-        modalContentWrapper.classList.remove('hidden');
+        
+        // Показываем все элементы обратно
+        modalTitle.classList.remove('hidden');
+        modalMessage.classList.remove('hidden');
+        passwordInput.classList.remove('hidden');
         modalButtons.classList.remove('hidden');
+        
+        // Снимаем блокировку с полей
+        passwordInput.disabled = false;
+        confirmPasswordBtn.disabled = false;
     }
 
     function showPasswordModal() {
         resetPasswordModal();
         passwordModalOverlay.classList.remove('hidden');
-        passwordInput.focus();
+        
+        if (!checkLockoutStatus()) {
+             passwordInput.focus();
+        }
     }
 
     function hidePasswordModal() {
         passwordModalOverlay.classList.add('hidden');
     }
 
-    // --- ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ---
-    function updateUI(kidName, data) {
+    // --- ОБНОВЛЕНИЕ ГЛАВНОГО ИНТЕРФЕЙСА ---
+    function updateUI(kidName, data) { /* ... эта функция без изменений ... */
         greetingEl.innerHTML = `Hi, ${kidName.charAt(0).toUpperCase() + kidName.slice(1)}! 👋 Let's check your time!`;
         const { remaining_minutes, total_minutes } = data;
 
@@ -152,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
+    /* ... эта секция без изменений ... */
     document.getElementById('switch-emin').addEventListener('click', () => {
         currentKid = 'emin';
         document.getElementById('switch-emin').classList.add('active');
@@ -176,12 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Добавляем обработчик нажатия Enter
     passwordInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
-            // Предотвращаем стандартное поведение формы (если оно есть)
             event.preventDefault(); 
-            submitBonusTime(currentKid);
+            confirmPasswordBtn.click(); // Имитируем клик по кнопке
         }
     });
 

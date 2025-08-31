@@ -301,14 +301,14 @@ main {
     color: #333;
 }
 
-
 .password-feedback {
-    font-size: 0.9em;
+    font-size: 1.1em; /* Сделаем текст немного крупнее */
     font-weight: bold;
-    margin-top: -10px;
+    margin-top: 10px;
     margin-bottom: 15px;
-    height: 1.2em; /* Резервируем место, чтобы окно не "прыгало" */
-    transition: color 0.3s ease;
+    height: auto; /* Убираем фиксированную высоту */
+    min-height: 1.2em;
+    transition: all 0.3s ease;
 }
 
 /* Добавляем стили для разных состояний */
@@ -317,7 +317,12 @@ main {
 }
 
 .password-feedback.success {
-    color: #2ecc71; /* Зеленый цвет для успеха */
+    color: #2ecc71;
+    font-size: 1.3em; /* Увеличим шрифт для успеха */
 }
 
-/* ... (остальные стили модального окна) ... */
+:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
