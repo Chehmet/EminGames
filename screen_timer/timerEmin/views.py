@@ -1,83 +1,76 @@
 # timerEmin/views.py
 
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+import requests # <-- Импортируем новую библиотеку
 import json
 
-# Наша простая "in-memory" база данных.
-# В реальном проекте это были бы модели Django и база данных (SQLite, PostgreSQL).
-# TOTAL_MINUTES - сколько всего минут в день. REMAINING_MINUTES - сколько осталось.
-KID_DATA = {
-    'emin': {'total_minutes': 60, 'remaining_minutes': 60},
-    'samira': {'total_minutes': 60, 'remaining_minutes': 60},
-}
-PARENT_PASSWORD = "1994"
+# --- УДАЛЯЕМ СЛОВАРЬ KID_DATA ---
+# Теперь данные хранятся на вашем реальном бэкенде
 
-@csrf_exempt # Отключаем CSRF для простоты, т.к. у нас нет системы логина
+# Адрес вашего настоящего бэкенда
+REAL_BACKEND_URL = "https://backend.gcrm.online/api/v1/finance"
+
+@csrf_exempt
 def get_kid_status(request, kid_name):
-    """Возвращает статус времени для конкретного ребенка."""
-    kid_name = kid_name.lower()
-    if kid_name not in KID_DATA:
-        return JsonResponse({'error': 'Kid not found'}, status=404)
-    
-    data = KID_DATA[kid_name]
-    # Отдаем данные в том же формате (часы), чтобы не менять фронтенд-логику конвертации
-    remaining_hours = data['remaining_minutes'] / 60.0
-    
-    return JsonResponse({
-        'kid_name': kid_name,
-        'total_minutes': data['total_minutes'],
-        'remaining_minutes': data['remaining_minutes'],
-        'allowed_tv_hours': round(remaining_hours, 2) # Округляем до 2 знаков
-    })
+    """
+    Прокси-функция: получает запрос от фронтенда,
+    перенаправляет его на реальный бэкенд и возвращает ответ.
+    """
+    try:
+        # Делаем запрос на реальный бэкенд
+        response = requests.get(f"{REAL_BACKEND_URL}/kidstatus/{kid_name}/")
+        # Проверяем, успешен ли запрос
+        response.raise_for_status() 
+        # Возвращаем JSON-ответ от бэкенда как есть
+        return JsonResponse(response.json())
+    except requests.exceptions.RequestException as e:
+        # Если бэкенд недоступен или вернул ошибку, сообщаем об этом
+        return JsonResponse({'error': f'Could not connect to the backend: {e}'}, status=502) # 502 Bad Gateway
 
 @csrf_exempt
 def add_time(request, kid_name):
-    """Добавляет 10 минут за книгу после проверки пароля."""
+    """Прокси-функция для добавления времени."""
     if request.method != 'POST':
-        return HttpResponseBadRequest("Only POST method is allowed")
-
-    kid_name = kid_name.lower()
-    if kid_name not in KID_DATA:
-        return JsonResponse({'error': 'Kid not found'}, status=404)
+        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
 
     try:
+        # Получаем данные (пароль) из тела запроса от фронтенда
         body = json.loads(request.body)
-        password = body.get('password')
+        
+        # Пересылаем эти данные на реальный бэкенд
+        response = requests.post(f"{REAL_BACKEND_URL}/add-time/{kid_name}/", json=body)
+        response.raise_for_status()
+        
+        return JsonResponse(response.json(), status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        # Если пароль неверный, реальный бэкенд вернет ошибку (например, 403),
+        # и мы ее просто перешлем. Этот блок для случаев, когда сервер недоступен.
+        return JsonResponse({'error': f'Could not connect to the backend: {e}'}, status=502)
     except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        return JsonResponse({'error': 'Invalid JSON in request'}, status=400)
 
-    if password != PARENT_PASSWORD:
-        return JsonResponse({'error': 'Incorrect password'}, status=403) # 403 Forbidden
-
-    # Добавляем 10 минут
-    KID_DATA[kid_name]['remaining_minutes'] += 10
-    
-    return JsonResponse({'success': True, 'new_minutes': KID_DATA[kid_name]['remaining_minutes']})
 
 @csrf_exempt
 def log_time(request, kid_name):
-    """Списывает просмотренное время."""
+    """Прокси-функция для списания времени."""
     if request.method != 'POST':
-        return HttpResponseBadRequest("Only POST method is allowed")
+        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
 
-    kid_name = kid_name.lower()
-    if kid_name not in KID_DATA:
-        return JsonResponse({'error': 'Kid not found'}, status=404)
-        
     try:
         body = json.loads(request.body)
-        minutes_watched = int(body.get('minutes', 0))
-    except (json.JSONDecodeError, ValueError):
-        return JsonResponse({'error': 'Invalid data'}, status=400)
+        
+        response = requests.post(f"{REAL_BACKEND_URL}/log-time/{kid_name}/", json=body)
+        response.raise_for_status()
 
-    # Уменьшаем время, но не уходим в минус
-    current_minutes = KID_DATA[kid_name]['remaining_minutes']
-    KID_DATA[kid_name]['remaining_minutes'] = max(0, current_minutes - minutes_watched)
-    
-    return JsonResponse({'success': True, 'new_minutes': KID_DATA[kid_name]['remaining_minutes']})
+        return JsonResponse(response.json(), status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': f'Could not connect to the backend: {e}'}, status=502)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON in request'}, status=400)
 
-# Главная страница (остается без изменений)
+
+# --- Эта функция остается БЕЗ ИЗМЕНЕНИЙ ---
 from django.shortcuts import render
 def main_page(request):
     return render(request, 'timerEmin/index.html')
