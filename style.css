@@ -39,7 +39,7 @@ main {
 }
 .visualizer {
     padding: 20px 0;
-    margin-top: 30px;
+    margin-top: 80px;
 }
 .race-track {
     background-color: #777;
@@ -129,7 +129,7 @@ main {
     background-color: #8B4513;
     width: 100px;
     height: 80px;
-    margin: 100px auto 0;
+    margin: 40px auto 0;
     border-radius: 0 0 40px 40px;
     position: relative;
 }
