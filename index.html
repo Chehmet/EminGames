@@ -12,6 +12,9 @@
 <body>
 
     <header>
+        <div class="theme-switcher-container">
+            <button id="theme-switcher">🌙</button>
+        </div>
         <div class="kid-switcher">
             <button id="switch-emin" class="kid-btn active">Emin</button>
             <button id="switch-samira" class="kid-btn">Samira</button>
@@ -33,6 +36,7 @@
                 </div>
             </div>
 
+            <!-- Простой визуализатор для Самиры -->
             <div class="visualizer hidden" id="samira-visualizer">
                 <div class="flower-pot">
                     <div class="flower-stem" id="flower-stem">
@@ -63,14 +67,10 @@
     <div class="modal-overlay hidden" id="password-modal-overlay">
         <div class="password-modal">
             <button class="close-btn" id="close-modal-btn">&times;</button>
-            
-            <div id="modal-content-wrapper">
-                <h3 id="modal-title">Parents Only! 🔐</h3>
-                <p id="modal-message">Please enter the password to add 10 minutes.</p>
-                <p class="password-feedback hidden" id="password-feedback"></p>
-                <input type="password" id="password-input" placeholder="••••••••">
-            </div>
-
+            <h3 id="modal-title">Parents Only! 🔐</h3>
+            <p id="modal-message">Please enter the password to add 10 minutes.</p>
+            <p class="password-feedback hidden" id="password-feedback"></p>
+            <input type="password" id="password-input" placeholder="••••••••">
             <div class="modal-buttons" id="modal-buttons">
                 <button id="cancel-password-btn">Cancel</button>
                 <button id="confirm-password-btn">Add Time</button>
