@@ -1,26 +1,22 @@
-/* Используем 'Fredoka One' - дружелюбный шрифт для детей */
 body {
     font-family: 'Fredoka One', cursive;
-    background-color: #87CEEB; /* Небесно-голубой фон */
+    background-color: #87CEEB;
     color: #333;
     text-align: center;
     margin: 0;
     padding: 20px;
 }
-
 header h1 {
     color: white;
     font-size: 2.5em;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
-
 main {
     display: flex;
     justify-content: center;
     gap: 40px;
     flex-wrap: wrap;
 }
-
 .time-card {
     background-color: white;
     border-radius: 20px;
@@ -28,27 +24,23 @@ main {
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     width: 90%;
     max-width: 500px;
-    position: relative; /* Важно для оверлея */
-    overflow: hidden; /* Скрываем все, что выходит за рамки */
+    position: relative;
+    overflow: hidden;
 }
-
 .time-card h2 {
     font-size: 1.8em;
-    color: #FF6347; /* Томатный цвет */
+    color: #FF6347;
     margin-top: 0;
 }
-
 .message {
     font-size: 1.2em;
     margin-bottom: 20px;
-    min-height: 50px; /* Чтобы не прыгал layout при загрузке */
+    min-height: 50px;
 }
-
 .visualizer {
     padding: 20px 0;
-    margin-top: 100px;
+    margin-top: 30px;
 }
-
 .race-track {
     background-color: #777;
     height: 50px;
@@ -58,25 +50,20 @@ main {
     display: flex;
     align-items: center;
 }
-
 .car {
     position: absolute;
-    left: 0; /* Начальная позиция */
-    transition: left 1s ease-in-out; /* Плавная анимация движения */
+    left: 0;
+    transition: left 1s ease-in-out;
 }
-
 .car img {
     height: 60px;
-    transform: translateY(-5px); /* Чтобы машинка была по центру трека */
+    transform: translateY(-5px);
 }
-
 .finish-line {
     position: absolute;
     right: 10px;
     height: 40px;
 }
-
-/* Оверлей, когда время вышло */
 .times-up-overlay {
     position: absolute;
     top: 0;
@@ -85,50 +72,40 @@ main {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
     color: white;
-    display: none; /* Изначально скрыт */
+    display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     z-index: 10;
 }
-
 .times-up-content span {
     font-size: 5em;
 }
-
 .times-up-content p {
     font-size: 1.5em;
 }
-
 .book-bonus {
     margin-top: 40px;
 }
-
 #read-book-btn {
     font-family: 'Fredoka One', cursive;
     font-size: 1.5em;
     padding: 15px 30px;
     border-radius: 15px;
     border: none;
-    background-color: #32CD32; /* Лаймово-зеленый */
+    background-color: #32CD32;
     color: white;
     cursor: pointer;
     box-shadow: 0 5px #228B22;
     transition: all 0.1s ease-in-out;
 }
-
 #read-book-btn:active {
     transform: translateY(3px);
     box-shadow: 0 2px #228B22;
 }
-
-
-
 .hidden {
     display: none !important;
 }
-
-/* Переключатель детей */
 .kid-switcher {
     margin-bottom: 20px;
 }
@@ -146,12 +123,10 @@ main {
 }
 .kid-btn.active {
     background-color: white;
-    color: #FF6347; /* Томатный */
+    color: #FF6347;
 }
-
-/* Визуализатор цветка */
 .flower-pot {
-    background-color: #8B4513; /* Цвет горшка */
+    background-color: #8B4513;
     width: 100px;
     height: 80px;
     margin: 40px auto 0;
@@ -159,9 +134,9 @@ main {
     position: relative;
 }
 .flower-stem {
-    background-color: #228B22; /* Цвет стебля */
+    background-color: #228B22;
     width: 15px;
-    height: 0; /* Изначально 0, будет расти с помощью JS */
+    height: 0;
     position: absolute;
     bottom: 80px;
     left: 50%;
@@ -176,8 +151,6 @@ main {
     left: 50%;
     transform: translateX(-50%);
 }
-
-/* Карточка для списания времени */
 .log-time-card {
     background-color: #ffffff;
     padding: 20px;
@@ -205,15 +178,13 @@ main {
     cursor: pointer;
     margin-left: 10px;
 }
-
-
 .modal-overlay {
-    position: fixed; /* Поверх всего */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -221,14 +192,12 @@ main {
     opacity: 1;
     transition: opacity 0.3s ease;
 }
-
-/* Скрываем оверлей по умолчанию */
 .modal-overlay.hidden {
     opacity: 0;
-    pointer-events: none; /* Нельзя кликнуть на невидимый элемент */
+    pointer-events: none;
 }
-
 .password-modal {
+    position: relative;
     background: white;
     padding: 25px;
     border-radius: 20px;
@@ -237,12 +206,10 @@ main {
     width: 90%;
     max-width: 400px;
 }
-
 .password-modal h3 {
     margin-top: 0;
     color: #333;
 }
-
 #password-input {
     width: 80%;
     padding: 10px;
@@ -252,14 +219,12 @@ main {
     border-radius: 10px;
     margin: 15px 0;
 }
-
 .modal-buttons {
     display: flex;
     justify-content: center;
     gap: 15px;
     margin-top: 20px;
 }
-
 .modal-buttons button {
     font-family: 'Fredoka One', cursive;
     font-size: 1.1em;
@@ -268,30 +233,21 @@ main {
     border: none;
     cursor: pointer;
 }
-
 #confirm-password-btn {
-    background-color: #32CD32; /* Лаймово-зеленый */
+    background-color: #32CD32;
     color: white;
 }
-
 #cancel-password-btn {
     background-color: #ccc;
     color: #333;
 }
-
-.password-modal {
-    position: relative; /* Очень важно! */
-    /* ... (остальные стили .password-modal) ... */
-}
-
-/* Стили для кнопки "закрыть" (крестик) */
 .close-btn {
     position: absolute;
     top: 10px;
     right: 15px;
     background: transparent;
     border: none;
-    font-size: 2em; /* Делаем крестик большим и заметным */
+    font-size: 2em;
     color: #aaa;
     cursor: pointer;
     line-height: 1;
@@ -300,29 +256,22 @@ main {
 .close-btn:hover {
     color: #333;
 }
-
 .password-feedback {
-    font-size: 1.1em; /* Сделаем текст немного крупнее */
+    font-size: 1.1em;
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: -10px;
     margin-bottom: 15px;
-    height: auto; /* Убираем фиксированную высоту */
     min-height: 1.2em;
     transition: all 0.3s ease;
 }
-
-/* Добавляем стили для разных состояний */
 .password-feedback.error {
-    color: #e74c3c; /* Красный цвет для ошибки */
+    color: #e74c3c;
 }
-
 .password-feedback.success {
     color: #2ecc71;
-    font-size: 1.3em; /* Увеличим шрифт для успеха */
+    font-size: 1.3em;
 }
-
 :disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
-
