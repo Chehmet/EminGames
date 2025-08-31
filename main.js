@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (kidName === 'emin') {
             eminVisualizer.classList.remove('hidden');
             samiraVisualizer.classList.add('hidden');
-            cardTitleEl.innerHTML = 'TV & Cartoons Today 📺';
+            cardTitleEl.innerHTML = 'Save your car from dragon 🔥';
             carEl.style.left = `${cappedPercentage * 0.85}%`;
         } else if (kidName === 'samira') {
             samiraVisualizer.classList.remove('hidden');
