@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emin's Time Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <header>
+        <h1>Hi, Emin! 👋 Let's check your TV time!</h1>
+    </header>
+
+    <main>
+        <!-- Секция для мультиков / TV -->
+        <div class="time-card" id="cartoons">
+            <h2>TV & Cartoons Today 📺</h2>
+            <div class="message" id="cartoon-message">Loading your time...</div>
+            <div class="visualizer">
+                <div class="race-track">
+                    <div class="car" id="cartoon-car">
+                        <img src="{% static 'images/car.png' %}" alt="Race Car">
+                    </div>
+                    <img class="finish-line" src="{% static 'images/finish.png' %}" alt="Finish Line">
+                </div>
+            </div>
+            <!-- Экран, когда время вышло -->
+            <div class="times-up-overlay" id="cartoon-times-up">
+                <div class="times-up-content">
+                    <span>😞</span>
+                    <p>Oh no! No more TV for today.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="book-bonus">
+        <button id="read-book-btn">I read a book! 📖</button>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
