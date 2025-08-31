@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const eminVisualizer = document.getElementById('emin-visualizer');
     const carEl = document.getElementById('cartoon-car');
     const samiraVisualizer = document.getElementById('samira-visualizer');
+    const flowerStemEl = document.getElementById('flower-stem'); // Элемент для простого цветка
     
     const passwordModalOverlay = document.getElementById('password-modal-overlay');
     const modalTitle = document.getElementById('modal-title');
@@ -187,18 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
             eminVisualizer.classList.add('hidden');
             cardTitleEl.innerHTML = 'Grow your Flower 🌸';
             
-            const flowerStemGroup = document.getElementById('flower-stem-group');
-            const flowerHeadGroup = document.getElementById('flower-head-group');
             const growthPercentage = 100 - cappedPercentage;
-            
-            flowerStemGroup.style.transform = `translate(0, ${100 - growthPercentage}%) scale(1, ${growthPercentage / 100})`;
-
-            if (growthPercentage > 10) {
-                flowerHeadGroup.style.opacity = 1;
-                flowerHeadGroup.style.transform = `translateY(${(100 - growthPercentage) * 1.8}px)`;
-            } else {
-                flowerHeadGroup.style.opacity = 0;
-            }
+            flowerStemEl.style.height = `${growthPercentage / 100 * 150}px`; // Макс. высота стебля 150px
         }
     }
     
