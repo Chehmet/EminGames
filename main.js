@@ -91,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- ОБНОВЛЕННАЯ ФУНКЦИЯ СПИСАНИЯ ВРЕМЕНИ ---
     async function logWatchedTime(kidName) {
         const inputEl = document.getElementById('minutes-watched-input');
         const minutes = parseInt(inputEl.value, 10);
@@ -104,35 +103,82 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
 
-            // Отправляем POST-запрос с отрицательным значением
             const response = await fetch(`${API_BASE_URL}/kidstatus/${formattedKidName}/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: -minutes }) // Отправляем -10, -25 и т.д.
+                body: JSON.stringify({ amount: -minutes })
             });
 
             if (!response.ok) {
                 throw new Error('Failed to log time on the server.');
             }
 
-            // Если успешно, очищаем поле и обновляем данные с сервера
             inputEl.value = '';
             fetchKidData(kidName);
 
         } catch (error) {
             console.error('Error logging time:', error);
-            alert("Oops! Could not save the time. Please check your connection and try again.");
+            alert("Oops! Could not save the time. Please try again.");
         }
     }
 
     // --- УПРАВЛЕНИЕ БЛОКИРОВКОЙ И МОДАЛЬНЫМ ОКНОМ ---
     
-    function handleFailedAttempt() { /* ... код без изменений ... */ }
-    function checkLockoutStatus() { /* ... код без изменений ... */ }
-    function showPasswordFeedback(message, type) { /* ... код без изменений ... */ }
-    function resetPasswordModal() { /* ... код без изменений ... */ }
-    function showPasswordModal() { /* ... код без изменений ... */ }
-    function hidePasswordModal() { /* ... код без изменений ... */ }
+    function handleFailedAttempt() {
+        let attempts = parseInt(localStorage.getItem('failedAttempts') || '0', 10);
+        attempts++;
+        if (attempts >= MAX_FAILED_ATTEMPTS) {
+            const lockoutEndTime = Date.now() + (LOCKOUT_DURATION_MINUTES * 60 * 1000);
+            localStorage.setItem('lockoutEndTime', lockoutEndTime);
+            localStorage.removeItem('failedAttempts');
+            checkLockoutStatus();
+        } else {
+            localStorage.setItem('failedAttempts', attempts);
+        }
+    }
+    
+    function checkLockoutStatus() {
+        const lockoutEndTime = parseInt(localStorage.getItem('lockoutEndTime') || '0', 10);
+        if (Date.now() < lockoutEndTime) {
+            const remainingMinutes = Math.ceil((lockoutEndTime - Date.now()) / 60000);
+            showPasswordFeedback(`Too many attempts. Try again in ${remainingMinutes} minutes.`, 'error');
+            passwordInput.disabled = true;
+            confirmPasswordBtn.disabled = true;
+            return true;
+        }
+        localStorage.removeItem('lockoutEndTime');
+        return false;
+    }
+
+    function showPasswordFeedback(message, type) {
+        passwordFeedbackEl.textContent = message;
+        passwordFeedbackEl.className = 'password-feedback';
+        passwordFeedbackEl.classList.add(type);
+        passwordFeedbackEl.classList.remove('hidden');
+    }
+
+    function resetPasswordModal() {
+        passwordFeedbackEl.classList.add('hidden');
+        passwordInput.value = '';
+        modalTitle.classList.remove('hidden');
+        modalMessage.classList.remove('hidden');
+        passwordInput.classList.remove('hidden');
+        modalButtons.classList.remove('hidden');
+        passwordInput.disabled = false;
+        confirmPasswordBtn.disabled = false;
+    }
+
+    function showPasswordModal() {
+        resetPasswordModal();
+        passwordModalOverlay.classList.remove('hidden');
+        if (!checkLockoutStatus()) {
+             passwordInput.focus();
+        }
+    }
+
+    function hidePasswordModal() {
+        passwordModalOverlay.classList.add('hidden');
+    }
 
     // --- ОБНОВЛЕНИЕ ГЛАВНОГО ИНТЕРФЕЙСА ---
     function updateUI(kidName, data) {
@@ -152,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             timeMessageEl.innerHTML = `Time is up for today!`;
             timesUpOverlay.classList.remove('hidden');
-            if (!sound.paused) { sound.currentTime = 0; } else { sound.play(); }
+            if (sound.HAVE_CURRENT_DATA) sound.play().catch(e => console.log("Play interrupted"));
         }
         
         const timeUsedPercentage = total_minutes > 0 ? ((total_minutes - remaining_minutes) / total_minutes) * 100 : 0;
@@ -185,69 +231,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ПЕРВЫЙ ЗАПУСК ---
     fetchKidData(currentKid);
 });
-
-// Я скопировал сюда полные версии всех функций, чтобы избежать путаницы
-// Вставьте этот код целиком, чтобы он заработал.
-function handleFailedAttempt() {
-    let attempts = parseInt(localStorage.getItem('failedAttempts') || '0', 10);
-    attempts++;
-    if (attempts >= 3) {
-        const lockoutEndTime = Date.now() + (10 * 60 * 1000);
-        localStorage.setItem('lockoutEndTime', lockoutEndTime);
-        localStorage.removeItem('failedAttempts');
-        checkLockoutStatus();
-    } else {
-        localStorage.setItem('failedAttempts', attempts);
-    }
-}
-function checkLockoutStatus() {
-    const passwordInput = document.getElementById('password-input');
-    const confirmPasswordBtn = document.getElementById('confirm-password-btn');
-    const lockoutEndTime = parseInt(localStorage.getItem('lockoutEndTime') || '0', 10);
-    if (Date.now() < lockoutEndTime) {
-        const remainingMinutes = Math.ceil((lockoutEndTime - Date.now()) / 60000);
-        showPasswordFeedback(`Too many attempts. Try again in ${remainingMinutes} minutes.`, 'error');
-        passwordInput.disabled = true;
-        confirmPasswordBtn.disabled = true;
-        return true;
-    }
-    localStorage.removeItem('lockoutEndTime');
-    return false;
-}
-function showPasswordFeedback(message, type) {
-    const passwordFeedbackEl = document.getElementById('password-feedback');
-    passwordFeedbackEl.textContent = message;
-    passwordFeedbackEl.className = 'password-feedback';
-    passwordFeedbackEl.classList.add(type);
-    passwordFeedbackEl.classList.remove('hidden');
-}
-function resetPasswordModal() {
-    const passwordFeedbackEl = document.getElementById('password-feedback');
-    const passwordInput = document.getElementById('password-input');
-    const modalTitle = document.getElementById('modal-title');
-    const modalMessage = document.getElementById('modal-message');
-    const modalButtons = document.getElementById('modal-buttons');
-    const confirmPasswordBtn = document.getElementById('confirm-password-btn');
-
-    passwordFeedbackEl.classList.add('hidden');
-    passwordInput.value = '';
-    modalTitle.classList.remove('hidden');
-    modalMessage.classList.remove('hidden');
-    passwordInput.classList.remove('hidden');
-    modalButtons.classList.remove('hidden');
-    passwordInput.disabled = false;
-    confirmPasswordBtn.disabled = false;
-}
-function showPasswordModal() {
-    const passwordModalOverlay = document.getElementById('password-modal-overlay');
-    const passwordInput = document.getElementById('password-input');
-    resetPasswordModal();
-    passwordModalOverlay.classList.remove('hidden');
-    if (!checkLockoutStatus()) {
-         passwordInput.focus();
-    }
-}
-function hidePasswordModal() {
-    const passwordModalOverlay = document.getElementById('password-modal-overlay');
-    passwordModalOverlay.classList.add('hidden');
-}
