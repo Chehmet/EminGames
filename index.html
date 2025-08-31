@@ -33,11 +33,40 @@
                 </div>
             </div>
 
+                        <!-- Новый красивый визуализатор для Самиры -->
             <div class="visualizer hidden" id="samira-visualizer">
-                <div class="flower-pot">
-                    <div class="flower-stem" id="flower-stem">
-                        <div class="flower-head">🌸</div>
-                    </div>
+                <div class="flower-container">
+                    <svg id="flower-svg" viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet">
+                        <!-- Горшок -->
+                        <path d="M60 280 Q100 310 140 280 L160 220 H40 Z" fill="#D2691E" />
+                        <rect x="30" y="200" width="140" height="20" rx="5" fill="#A0522D" />
+
+                        <!-- Стебель -->
+                        <g id="flower-stem-group" transform="translate(0 300) scale(1 -1)">
+                            <rect x="92.5" y="0" width="15" height="180" fill="url(#stemGradient)" rx="5"/>
+                        </g>
+                        
+                        <!-- Голова цветка (изначально спрятана) -->
+                        <g id="flower-head-group" style="opacity: 0; transition: opacity 0.5s ease-in-out;">
+                            <!-- Лепестки -->
+                            <circle cx="100" cy="80" r="30" fill="#FFC0CB" />
+                            <circle cx="70" cy="65" r="25" fill="#FFB6C1" />
+                            <circle cx="130" cy="65" r="25" fill="#FFB6C1" />
+                            <circle cx="70" cy="95" r="25" fill="#FFB6C1" />
+                            <circle cx="130" cy="95" r="25" fill="#FFB6C1" />
+                            <!-- Серединка -->
+                            <circle cx="100" cy="80" r="15" fill="#FFD700" />
+                        </g>
+
+                        <!-- Определения градиента для стебля -->
+                        <defs>
+                            <linearGradient id="stemGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#228B22;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#3CB371;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#228B22;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
                 </div>
             </div>
 

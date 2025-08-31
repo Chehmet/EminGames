@@ -180,42 +180,61 @@ document.addEventListener('DOMContentLoaded', () => {
         passwordModalOverlay.classList.add('hidden');
     }
 
-    // --- ОБНОВЛЕНИЕ ГЛАВНОГО ИНТЕРФЕЙСА ---
-    function updateUI(kidName, data) {
-        greetingEl.innerHTML = `Hi, ${kidName.charAt(0).toUpperCase() + kidName.slice(1)}! 👋 Let's check your time!`;
+// Найдите эту функцию в main.js и замените ее целиком
+
+function updateUI(kidName, data) {
+    greetingEl.innerHTML = `Hi, ${kidName.charAt(0).toUpperCase() + kidName.slice(1)}! 👋 Let's check your time!`;
+    
+    const remaining_minutes = data.remaining_tv_minutes;
+    const total_minutes = data.total_tv_minutes;
+
+    if (remaining_minutes === undefined || total_minutes === undefined) {
+        timeMessageEl.innerText = 'Oops! Received invalid data from the server.';
+        return;
+    }
+
+    if (remaining_minutes > 0) {
+        timeMessageEl.innerHTML = `You can watch for <strong>${remaining_minutes}</strong> minutes.`;
+        timesUpOverlay.classList.add('hidden');
+    } else {
+        timeMessageEl.innerHTML = `Time is up for today!`;
+        timesUpOverlay.classList.remove('hidden');
+        if (sound.HAVE_CURRENT_DATA) sound.play().catch(e => console.log("Play interrupted"));
+    }
+    
+    const timeUsedPercentage = total_minutes > 0 ? ((total_minutes - remaining_minutes) / total_minutes) * 100 : 0;
+    const cappedPercentage = Math.max(0, Math.min(100, timeUsedPercentage));
+    
+    if (kidName === 'emin') {
+        eminVisualizer.classList.remove('hidden');
+        samiraVisualizer.classList.add('hidden');
+        cardTitleEl.innerHTML = 'TV & Cartoons Today 📺';
+        carEl.style.left = `${cappedPercentage * 0.85}%`;
+    } else if (kidName === 'samira') {
+        samiraVisualizer.classList.remove('hidden');
+        eminVisualizer.classList.add('hidden');
+        cardTitleEl.innerHTML = 'Grow your Flower 🌸';
         
-        const remaining_minutes = data.remaining_tv_minutes;
-        const total_minutes = data.total_tv_minutes;
+        // --- НОВАЯ ЛОГИКА ДЛЯ SVG ЦВЕТКА ---
+        const flowerStemGroup = document.getElementById('flower-stem-group');
+        const flowerHeadGroup = document.getElementById('flower-head-group');
 
-        if (remaining_minutes === undefined || total_minutes === undefined) {
-            timeMessageEl.innerText = 'Oops! Received invalid data from the server.';
-            return;
-        }
+        // Рассчитываем высоту стебля как процент от 100
+        const growthPercentage = 100 - cappedPercentage;
+        
+        // Масштабируем стебель по вертикали
+        flowerStemGroup.style.transform = `translate(0, ${100 - growthPercentage}%) scale(1, ${growthPercentage / 100})`;
 
-        if (remaining_minutes > 0) {
-            timeMessageEl.innerHTML = `You can watch for <strong>${remaining_minutes}</strong> minutes.`;
-            timesUpOverlay.classList.add('hidden');
+        // Показываем голову цветка, только если он хоть немного вырос
+        if (growthPercentage > 10) {
+            flowerHeadGroup.style.opacity = 1;
+            // Двигаем голову цветка вместе со стеблем
+            flowerHeadGroup.style.transform = `translateY(${(100 - growthPercentage) * 1.8}px)`;
         } else {
-            timeMessageEl.innerHTML = `Time is up for today!`;
-            timesUpOverlay.classList.remove('hidden');
-            if (sound.HAVE_CURRENT_DATA) sound.play().catch(e => console.log("Play interrupted"));
-        }
-        
-        const timeUsedPercentage = total_minutes > 0 ? ((total_minutes - remaining_minutes) / total_minutes) * 100 : 0;
-        const cappedPercentage = Math.max(0, Math.min(100, timeUsedPercentage));
-        
-        if (kidName === 'emin') {
-            eminVisualizer.classList.remove('hidden');
-            samiraVisualizer.classList.add('hidden');
-            cardTitleEl.innerHTML = 'TV & Cartoons Today 📺';
-            carEl.style.left = `${cappedPercentage * 0.85}%`;
-        } else if (kidName === 'samira') {
-            samiraVisualizer.classList.remove('hidden');
-            eminVisualizer.classList.add('hidden');
-            cardTitleEl.innerHTML = 'Grow your Flower 🌸';
-            flowerStemEl.style.height = `${(100 - cappedPercentage) / 100 * 150}px`;
+            flowerHeadGroup.style.opacity = 0;
         }
     }
+}
     
     // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
     document.getElementById('switch-emin').addEventListener('click', () => { currentKid = 'emin'; document.getElementById('switch-emin').classList.add('active'); document.getElementById('switch-samira').classList.remove('active'); fetchKidData(currentKid); });
