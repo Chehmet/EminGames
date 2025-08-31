@@ -24,6 +24,7 @@
             <h2 id="card-title">TV & Cartoons Today 📺</h2>
             <div class="message" id="time-message">Loading...</div>
             
+            <!-- Визуализатор для Эмина (машинка) -->
             <div class="visualizer" id="emin-visualizer">
                 <div class="race-track">
                     <div class="car" id="cartoon-car">
@@ -33,7 +34,7 @@
                 </div>
             </div>
 
-                        <!-- Новый красивый визуализатор для Самиры -->
+            <!-- Красивый SVG визуализатор для Самиры -->
             <div class="visualizer hidden" id="samira-visualizer">
                 <div class="flower-container">
                     <svg id="flower-svg" viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet">
@@ -46,8 +47,8 @@
                             <rect x="92.5" y="0" width="15" height="180" fill="url(#stemGradient)" rx="5"/>
                         </g>
                         
-                        <!-- Голова цветка (изначально спрятана) -->
-                        <g id="flower-head-group" style="opacity: 0; transition: opacity 0.5s ease-in-out;">
+                        <!-- Голова цветка -->
+                        <g id="flower-head-group" style="opacity: 0;">
                             <!-- Лепестки -->
                             <circle cx="100" cy="80" r="30" fill="#FFC0CB" />
                             <circle cx="70" cy="65" r="25" fill="#FFB6C1" />
@@ -92,14 +93,10 @@
     <div class="modal-overlay hidden" id="password-modal-overlay">
         <div class="password-modal">
             <button class="close-btn" id="close-modal-btn">&times;</button>
-            
-            <div id="modal-content-wrapper">
-                <h3 id="modal-title">Parents Only! 🔐</h3>
-                <p id="modal-message">Please enter the password to add 10 minutes.</p>
-                <p class="password-feedback hidden" id="password-feedback"></p>
-                <input type="password" id="password-input" placeholder="••••••••">
-            </div>
-
+            <h3 id="modal-title">Parents Only! 🔐</h3>
+            <p id="modal-message">Please enter the password to add 10 minutes.</p>
+            <p class="password-feedback hidden" id="password-feedback"></p>
+            <input type="password" id="password-input" placeholder="••••••••">
             <div class="modal-buttons" id="modal-buttons">
                 <button id="cancel-password-btn">Cancel</button>
                 <button id="confirm-password-btn">Add Time</button>

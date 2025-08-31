@@ -14,7 +14,6 @@ header h1 {
 main {
     display: flex;
     justify-content: center;
-    gap: 40px;
     flex-wrap: wrap;
 }
 .time-card {
@@ -39,7 +38,7 @@ main {
 }
 .visualizer {
     padding: 20px 0;
-    margin-top: 80px;
+    margin-top: 30px;
 }
 .race-track {
     background-color: #777;
@@ -124,32 +123,6 @@ main {
 .kid-btn.active {
     background-color: white;
     color: #FF6347;
-}
-.flower-pot {
-    background-color: #8B4513;
-    width: 100px;
-    height: 80px;
-    margin: 40px auto 0;
-    border-radius: 0 0 40px 40px;
-    position: relative;
-}
-.flower-stem {
-    background-color: #228B22;
-    width: 15px;
-    height: 0;
-    position: absolute;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 10px 10px 0 0;
-    transition: height 1s ease-in-out;
-}
-.flower-head {
-    font-size: 50px;
-    position: absolute;
-    top: -50px;
-    left: 50%;
-    transform: translateX(-50%);
 }
 .log-time-card {
     background-color: #ffffff;
@@ -275,35 +248,26 @@ main {
     opacity: 0.5;
     cursor: not-allowed;
 }
-
-/* Новый визуализатор цветка */
+/* Стили для SVG-цветка */
 .flower-container {
     width: 100%;
     max-width: 250px;
     margin: 0 auto;
-    height: 300px; /* Фиксированная высота для контейнера SVG */
+    height: 300px;
 }
-
 #flower-svg {
     width: 100%;
     height: 100%;
 }
-
-/* Группа стебля */
 #flower-stem-group {
-    /* Рост будет управляться через transform в JS */
     transform-origin: bottom center;
-    transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Пружинистая анимация роста */
+    transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
-
-/* Голова цветка */
 #flower-head-group {
-    /* Появление будет управляться через opacity в JS */
     transform-origin: center;
-    animation: gentle-bob 4s ease-in-out infinite; /* Плавное покачивание */
+    transition: opacity 0.5s ease-in-out, transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    animation: gentle-bob 4s ease-in-out infinite;
 }
-
-/* Анимация покачивания цветка */
 @keyframes gentle-bob {
     0% { transform: rotate(0deg) translateY(0px); }
     50% { transform: rotate(2deg) translateY(-2px); }
