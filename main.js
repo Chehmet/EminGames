@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- ГЛАВНАЯ КОНФИГУРАЦИЯ ---
-    const API_BASE_URL = 'https://backend.gcrm.online/api/v1/finance'; // <-- Прямой адрес вашего API
+    const API_BASE_URL = 'https://backend.gcrm.online/api/v1/finance';
+    const PARENT_PASSWORD = '1994'; // Пароль для проверки на фронтенде
 
     // --- ГЛОБАЛЬНОЕ СОСТОЯНИЕ ---
     let currentKid = 'emin';
@@ -34,9 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchKidData(kidName) {
         try {
-            // Обращаемся к URL для конкретного ребенка
-            const response = await fetch(`${API_BASE_URL}/kidstatus/${kidName}/`);
+            const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
+            const response = await fetch(`${API_BASE_URL}/kidstatus/${formattedKidName}/`);
             if (!response.ok) throw new Error(`Network response was not ok. Status: ${response.status}`);
+            
             const data = await response.json();
             updateUI(kidName, data);
         } catch (error) {
@@ -47,24 +49,27 @@ document.addEventListener('DOMContentLoaded', () => {
     
     async function submitBonusTime(kidName) {
         const password = passwordInput.value;
-        if (!password) {
-            showPasswordFeedback("Please enter a password.", "error");
+        
+        if (password !== PARENT_PASSWORD) {
+            handleFailedAttempt();
+            showPasswordFeedback("Incorrect password", "error");
+            passwordInput.value = '';
+            passwordInput.focus();
             return;
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/add-time/${kidName}/`, {
+            const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
+            
+            const response = await fetch(`${API_BASE_URL}/kidstatus/${formattedKidName}/`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ password: password })
+                body: JSON.stringify({ amount: 10 })
             });
-            const result = await response.json();
-
+            
             if (!response.ok) {
-                handleFailedAttempt();
-                showPasswordFeedback(result.error || 'Incorrect password', "error");
-                passwordInput.value = '';
-                passwordInput.focus();
+                const result = await response.json();
+                showPasswordFeedback(result.error || 'Server error, could not add time.', "error");
             } else {
                 localStorage.removeItem('failedAttempts');
                 localStorage.removeItem('lockoutEndTime');
@@ -86,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- ОБНОВЛЕННАЯ ФУНКЦИЯ СПИСАНИЯ ВРЕМЕНИ ---
     async function logWatchedTime(kidName) {
         const inputEl = document.getElementById('minutes-watched-input');
         const minutes = parseInt(inputEl.value, 10);
@@ -94,84 +100,51 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Please enter a valid number of minutes.");
             return;
         }
+
         try {
-            const response = await fetch(`${API_BASE_URL}/log-time/${kidName}/`, {
+            const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
+
+            // Отправляем POST-запрос с отрицательным значением
+            const response = await fetch(`${API_BASE_URL}/kidstatus/${formattedKidName}/`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ minutes: minutes })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: -minutes }) // Отправляем -10, -25 и т.д.
             });
-            if (!response.ok) throw new Error('Failed to log time');
-            
+
+            if (!response.ok) {
+                throw new Error('Failed to log time on the server.');
+            }
+
+            // Если успешно, очищаем поле и обновляем данные с сервера
             inputEl.value = '';
             fetchKidData(kidName);
+
         } catch (error) {
             console.error('Error logging time:', error);
-            alert("Oops! Could not save the time. Please try again.");
+            alert("Oops! Could not save the time. Please check your connection and try again.");
         }
     }
 
     // --- УПРАВЛЕНИЕ БЛОКИРОВКОЙ И МОДАЛЬНЫМ ОКНОМ ---
     
-    function handleFailedAttempt() {
-        let attempts = parseInt(localStorage.getItem('failedAttempts') || '0', 10);
-        attempts++;
-        if (attempts >= MAX_FAILED_ATTEMPTS) {
-            const lockoutEndTime = Date.now() + LOCKOUT_DURATION_MINUTES * 60 * 1000;
-            localStorage.setItem('lockoutEndTime', lockoutEndTime);
-            localStorage.removeItem('failedAttempts');
-            checkLockoutStatus();
-        } else {
-            localStorage.setItem('failedAttempts', attempts);
-        }
-    }
-    
-    function checkLockoutStatus() {
-        const lockoutEndTime = parseInt(localStorage.getItem('lockoutEndTime') || '0', 10);
-        if (Date.now() < lockoutEndTime) {
-            const remainingMinutes = Math.ceil((lockoutEndTime - Date.now()) / 60000);
-            showPasswordFeedback(`Too many attempts. Try again in ${remainingMinutes} minutes.`, 'error');
-            passwordInput.disabled = true;
-            confirmPasswordBtn.disabled = true;
-            return true;
-        }
-        localStorage.removeItem('lockoutEndTime');
-        return false;
-    }
-
-    function showPasswordFeedback(message, type) {
-        passwordFeedbackEl.textContent = message;
-        passwordFeedbackEl.className = 'password-feedback';
-        passwordFeedbackEl.classList.add(type);
-        passwordFeedbackEl.classList.remove('hidden');
-    }
-
-    function resetPasswordModal() {
-        passwordFeedbackEl.classList.add('hidden');
-        passwordInput.value = '';
-        modalTitle.classList.remove('hidden');
-        modalMessage.classList.remove('hidden');
-        passwordInput.classList.remove('hidden');
-        modalButtons.classList.remove('hidden');
-        passwordInput.disabled = false;
-        confirmPasswordBtn.disabled = false;
-    }
-
-    function showPasswordModal() {
-        resetPasswordModal();
-        passwordModalOverlay.classList.remove('hidden');
-        if (!checkLockoutStatus()) {
-             passwordInput.focus();
-        }
-    }
-
-    function hidePasswordModal() {
-        passwordModalOverlay.classList.add('hidden');
-    }
+    function handleFailedAttempt() { /* ... код без изменений ... */ }
+    function checkLockoutStatus() { /* ... код без изменений ... */ }
+    function showPasswordFeedback(message, type) { /* ... код без изменений ... */ }
+    function resetPasswordModal() { /* ... код без изменений ... */ }
+    function showPasswordModal() { /* ... код без изменений ... */ }
+    function hidePasswordModal() { /* ... код без изменений ... */ }
 
     // --- ОБНОВЛЕНИЕ ГЛАВНОГО ИНТЕРФЕЙСА ---
     function updateUI(kidName, data) {
         greetingEl.innerHTML = `Hi, ${kidName.charAt(0).toUpperCase() + kidName.slice(1)}! 👋 Let's check your time!`;
-        const { remaining_minutes, total_minutes } = data;
+        
+        const remaining_minutes = data.remaining_tv_minutes;
+        const total_minutes = data.total_tv_minutes;
+
+        if (remaining_minutes === undefined || total_minutes === undefined) {
+            timeMessageEl.innerText = 'Oops! Received invalid data from the server.';
+            return;
+        }
 
         if (remaining_minutes > 0) {
             timeMessageEl.innerHTML = `You can watch for <strong>${remaining_minutes}</strong> minutes.`;
@@ -179,10 +152,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             timeMessageEl.innerHTML = `Time is up for today!`;
             timesUpOverlay.classList.remove('hidden');
-            sound.play();
+            if (!sound.paused) { sound.currentTime = 0; } else { sound.play(); }
         }
-        const timeUsedPercentage = ((total_minutes - remaining_minutes) / total_minutes) * 100;
+        
+        const timeUsedPercentage = total_minutes > 0 ? ((total_minutes - remaining_minutes) / total_minutes) * 100 : 0;
         const cappedPercentage = Math.max(0, Math.min(100, timeUsedPercentage));
+        
         if (kidName === 'emin') {
             eminVisualizer.classList.remove('hidden');
             samiraVisualizer.classList.add('hidden');
@@ -197,36 +172,82 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
-    document.getElementById('switch-emin').addEventListener('click', () => {
-        currentKid = 'Emin';
-        document.getElementById('switch-emin').classList.add('active');
-        document.getElementById('switch-samira').classList.remove('active');
-        fetchKidData(currentKid);
-    });
-    document.getElementById('switch-samira').addEventListener('click', () => {
-        currentKid = 'Samira';
-        document.getElementById('switch-samira').classList.add('active');
-        document.getElementById('switch-emin').classList.remove('active');
-        fetchKidData(currentKid);
-    });
+    document.getElementById('switch-emin').addEventListener('click', () => { currentKid = 'emin'; document.getElementById('switch-emin').classList.add('active'); document.getElementById('switch-samira').classList.remove('active'); fetchKidData(currentKid); });
+    document.getElementById('switch-samira').addEventListener('click', () => { currentKid = 'samira'; document.getElementById('switch-samira').classList.add('active'); document.getElementById('switch-emin').classList.remove('active'); fetchKidData(currentKid); });
     document.getElementById('read-book-btn').addEventListener('click', showPasswordModal);
     document.getElementById('log-time-btn').addEventListener('click', () => logWatchedTime(currentKid));
-    
     confirmPasswordBtn.addEventListener('click', () => submitBonusTime(currentKid));
     cancelPasswordBtn.addEventListener('click', hidePasswordModal);
     closeModalBtn.addEventListener('click', hidePasswordModal);
-    passwordModalOverlay.addEventListener('click', (event) => {
-        if (event.target === passwordModalOverlay) {
-            hidePasswordModal();
-        }
-    });
-    passwordInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); 
-            confirmPasswordBtn.click();
-        }
-    });
+    passwordModalOverlay.addEventListener('click', (event) => { if (event.target === passwordModalOverlay) { hidePasswordModal(); } });
+    passwordInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); confirmPasswordBtn.click(); } });
 
     // --- ПЕРВЫЙ ЗАПУСК ---
     fetchKidData(currentKid);
 });
+
+// Я скопировал сюда полные версии всех функций, чтобы избежать путаницы
+// Вставьте этот код целиком, чтобы он заработал.
+function handleFailedAttempt() {
+    let attempts = parseInt(localStorage.getItem('failedAttempts') || '0', 10);
+    attempts++;
+    if (attempts >= 3) {
+        const lockoutEndTime = Date.now() + (10 * 60 * 1000);
+        localStorage.setItem('lockoutEndTime', lockoutEndTime);
+        localStorage.removeItem('failedAttempts');
+        checkLockoutStatus();
+    } else {
+        localStorage.setItem('failedAttempts', attempts);
+    }
+}
+function checkLockoutStatus() {
+    const passwordInput = document.getElementById('password-input');
+    const confirmPasswordBtn = document.getElementById('confirm-password-btn');
+    const lockoutEndTime = parseInt(localStorage.getItem('lockoutEndTime') || '0', 10);
+    if (Date.now() < lockoutEndTime) {
+        const remainingMinutes = Math.ceil((lockoutEndTime - Date.now()) / 60000);
+        showPasswordFeedback(`Too many attempts. Try again in ${remainingMinutes} minutes.`, 'error');
+        passwordInput.disabled = true;
+        confirmPasswordBtn.disabled = true;
+        return true;
+    }
+    localStorage.removeItem('lockoutEndTime');
+    return false;
+}
+function showPasswordFeedback(message, type) {
+    const passwordFeedbackEl = document.getElementById('password-feedback');
+    passwordFeedbackEl.textContent = message;
+    passwordFeedbackEl.className = 'password-feedback';
+    passwordFeedbackEl.classList.add(type);
+    passwordFeedbackEl.classList.remove('hidden');
+}
+function resetPasswordModal() {
+    const passwordFeedbackEl = document.getElementById('password-feedback');
+    const passwordInput = document.getElementById('password-input');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalButtons = document.getElementById('modal-buttons');
+    const confirmPasswordBtn = document.getElementById('confirm-password-btn');
+
+    passwordFeedbackEl.classList.add('hidden');
+    passwordInput.value = '';
+    modalTitle.classList.remove('hidden');
+    modalMessage.classList.remove('hidden');
+    passwordInput.classList.remove('hidden');
+    modalButtons.classList.remove('hidden');
+    passwordInput.disabled = false;
+    confirmPasswordBtn.disabled = false;
+}
+function showPasswordModal() {
+    const passwordModalOverlay = document.getElementById('password-modal-overlay');
+    const passwordInput = document.getElementById('password-input');
+    resetPasswordModal();
+    passwordModalOverlay.classList.remove('hidden');
+    if (!checkLockoutStatus()) {
+         passwordInput.focus();
+    }
+}
+function hidePasswordModal() {
+    const passwordModalOverlay = document.getElementById('password-modal-overlay');
+    passwordModalOverlay.classList.add('hidden');
+}
