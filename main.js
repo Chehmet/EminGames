@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         if (remaining_minutes > 0) {
-            timeMessageEl.innerHTML = `You can watch for <strong>${remaining_minutes}</strong> minutes.`;
+            timeMessageEl.innerHTML = `You can watch for <strong>${remaining_minutes}</strong> minutes this week.`;
             timesUpOverlay.classList.add('hidden');
         } else {
             timeMessageEl.innerHTML = `Time is up for this week!`;
