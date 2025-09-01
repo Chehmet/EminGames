@@ -1,6 +1,6 @@
 {
   "name": "KidsTimeTracker",
-  "short_name": "KidsTime",
+  "short_name": "Kids'Time",
   "icons": [
     {
       "src": "/EminGames/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#877171",
-  "background_color": "#c28d8d",
+  "theme_color": "#4d0303",
+  "background_color": "#000000",
   "display": "standalone"
 }
