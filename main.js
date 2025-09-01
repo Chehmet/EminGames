@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timeMessageEl.innerHTML = `You can watch for <strong>${remaining_minutes}</strong> minutes.`;
             timesUpOverlay.classList.add('hidden');
         } else {
-            timeMessageEl.innerHTML = `Time is up for today!`;
+            timeMessageEl.innerHTML = `Time is up for this week!`;
             timesUpOverlay.classList.remove('hidden');
             if (sound.HAVE_CURRENT_DATA) sound.play().catch(e => console.log("Play interrupted"));
         }
