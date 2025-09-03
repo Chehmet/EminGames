@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --- КОНФИГУРАЦИЯ ---
     const API_BASE_URL = 'https://backend.gcrm.online/api/v1/finance';
     const PARENT_PASSWORD = '1994';
     let currentKid = 'emin';
     const MAX_FAILED_ATTEMPTS_FOR_PENALTY = 5;
-    
+
+    // --- ЭЛЕМЕНТЫ DOM ---
     const themeSwitcher = document.getElementById('theme-switcher');
     const greetingEl = document.getElementById('greeting');
     const cardTitleEl = document.getElementById('card-title');
@@ -24,6 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalBtn = document.getElementById('close-modal-btn');
     const passwordFeedbackEl = document.getElementById('password-feedback');
     const sound = new Audio('sounds/time_up.mp3');
+    const minutesWatchedInput = document.getElementById('minutes-watched-input');
+    const logTimeBtn = document.getElementById('log-time-btn');
+    const switchEminBtn = document.getElementById('switch-emin');
+    const switchSamiraBtn = document.getElementById('switch-samira');
+    const readBookBtn = document.getElementById('read-book-btn');
+    
+    // --- ФУНКЦИИ ---
 
     const applyTheme = (theme) => {
         if (theme === 'dark') {
@@ -34,18 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
             themeSwitcher.textContent = '🌙';
         }
     };
-    themeSwitcher.addEventListener('click', () => {
-        const isDarkMode = document.body.classList.contains('dark-theme');
-        const newTheme = isDarkMode ? 'light' : 'dark';
-        localStorage.setItem('theme', newTheme);
-        applyTheme(newTheme);
-    });
 
     async function fetchKidData(kidName) {
         try {
             const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
             const response = await fetch(`${API_BASE_URL}/kidstatus/${formattedKidName}/`);
-            if (!response.ok) throw new Error(`Network response was not ok. Status: ${response.status}`);
+
+            if (!response.ok) {
+                throw new Error(`Network response was not ok. Status: ${response.status}`);
+            }
             const data = await response.json();
             updateUI(kidName, data);
         } catch (error) {
@@ -60,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             handleFailedAttempt(kidName);
             const attempts = parseInt(localStorage.getItem(`failedAttempts_${kidName}`) || '0', 10);
             let errorMessage = "Incorrect password";
+
             if (attempts === MAX_FAILED_ATTEMPTS_FOR_PENALTY - 1) {
                 errorMessage += ". Next incorrect attempt will result in a 5-minute penalty.";
             } else if (attempts === 0 && localStorage.getItem(`penaltyApplied_${kidName}`)) {
@@ -71,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordInput.focus();
             return;
         }
+
         localStorage.setItem(`failedAttempts_${kidName}`, '0');
         try {
             const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
@@ -79,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ amount: 10 })
             });
+
             if (!response.ok) {
                 const result = await response.json();
                 showPasswordFeedback(result.error || 'Server error, could not add time.', "error");
@@ -100,12 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function logWatchedTime(kidName) {
-        const inputEl = document.getElementById('minutes-watched-input');
-        const minutes = parseInt(inputEl.value, 10);
+        const minutes = parseInt(minutesWatchedInput.value, 10);
         if (isNaN(minutes) || minutes <= 0) {
             alert("Please enter a valid number of minutes.");
             return;
         }
+
         try {
             const formattedKidName = kidName.charAt(0).toUpperCase() + kidName.slice(1);
             const response = await fetch(`${API_BASE_URL}/kidstatus/${formattedKidName}/`, {
@@ -113,8 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: -minutes })
             });
-            if (!response.ok) throw new Error('Failed to log time on the server.');
-            inputEl.value = '';
+
+            if (!response.ok) {
+                throw new Error('Failed to log time on the server.');
+            }
+            minutesWatchedInput.value = '';
             fetchKidData(kidName);
         } catch (error) {
             console.error('Error logging time:', error);
@@ -138,14 +150,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ИЗМЕНЕНО: Удалена логика блокировки (lockout)
     function handleFailedAttempt(kidName) {
         const attemptsKey = `failedAttempts_${kidName}`;
         let attempts = parseInt(localStorage.getItem(attemptsKey) || '0', 10);
         attempts++;
+
         if (attempts === MAX_FAILED_ATTEMPTS_FOR_PENALTY) {
             applyPenalty(kidName);
-            localStorage.setItem(attemptsKey, '0'); // Сбрасываем счетчик после штрафа
+            localStorage.setItem(attemptsKey, '0');
         } else {
             localStorage.setItem(attemptsKey, attempts);
         }
@@ -183,20 +195,26 @@ document.addEventListener('DOMContentLoaded', () => {
         greetingEl.innerHTML = `Hi, ${kidName.charAt(0).toUpperCase() + kidName.slice(1)}! 👋 Let's check your time!`;
         const remaining_minutes = data.remaining_tv_minutes;
         const total_minutes = data.total_tv_minutes;
+
         if (remaining_minutes === undefined || total_minutes === undefined) {
             timeMessageEl.innerText = 'Oops! Received invalid data from the server.';
             return;
         }
+
         if (remaining_minutes > 0) {
-            timeMessageEl.innerHTML = `You can watch for <strong>${remaining_minutes}</strong> minutes this week.`;
+            timeMessageEl.innerHTML = `You can watch for <strong>${remaining_minutes}</strong> minutes.`;
             timesUpOverlay.classList.add('hidden');
         } else {
-            timeMessageEl.innerHTML = `Time is up for this week!`;
+            timeMessageEl.innerHTML = `Time is up!`;
             timesUpOverlay.classList.remove('hidden');
-            if (sound.HAVE_CURRENT_DATA) sound.play().catch(e => console.log("Play interrupted"));
+            if (sound.HAVE_CURRENT_DATA) {
+                sound.play().catch(e => console.error("Audio play failed:", e));
+            }
         }
+
         const timeUsedPercentage = total_minutes > 0 ? ((total_minutes - remaining_minutes) / total_minutes) * 100 : 0;
         const cappedPercentage = Math.max(0, Math.min(100, timeUsedPercentage));
+
         if (kidName === 'emin') {
             eminVisualizer.classList.remove('hidden');
             samiraVisualizer.classList.add('hidden');
@@ -211,16 +229,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    document.getElementById('switch-emin').addEventListener('click', () => { currentKid = 'emin'; document.getElementById('switch-emin').classList.add('active'); document.getElementById('switch-samira').classList.remove('active'); fetchKidData(currentKid); });
-    document.getElementById('switch-samira').addEventListener('click', () => { currentKid = 'samira'; document.getElementById('switch-samira').classList.add('active'); document.getElementById('switch-emin').classList.remove('active'); fetchKidData(currentKid); });
-    document.getElementById('read-book-btn').addEventListener('click', showPasswordModal);
-    document.getElementById('log-time-btn').addEventListener('click', () => logWatchedTime(currentKid));
-    confirmPasswordBtn.addEventListener('click', () => submitBonusTime(currentKid));
-    cancelPasswordBtn.addEventListener('click', hidePasswordModal);
-    closeModalBtn.addEventListener('click', hidePasswordModal);
-    passwordModalOverlay.addEventListener('click', (event) => { if (event.target === passwordModalOverlay) { hidePasswordModal(); } });
-    passwordInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); confirmPasswordBtn.click(); } });
+    // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
 
+    themeSwitcher.addEventListener('click', () => {
+        const isDarkMode = document.body.classList.contains('dark-theme');
+        const newTheme = isDarkMode ? 'light' : 'dark';
+        localStorage.setItem('theme', newTheme);
+        applyTheme(newTheme);
+    });
+
+    switchEminBtn.addEventListener('click', () => { 
+        currentKid = 'emin'; 
+        switchEminBtn.classList.add('active'); 
+        switchSamiraBtn.classList.remove('active'); 
+        fetchKidData(currentKid); 
+    });
+    
+    switchSamiraBtn.addEventListener('click', () => { 
+        currentKid = 'samira';
+        switchSamiraBtn.classList.add('active'); 
+        switchEminBtn.classList.remove('active'); 
+        fetchKidData(currentKid); 
+    });
+    
+    readBookBtn.addEventListener('click', showPasswordModal);
+    
+    logTimeBtn.addEventListener('click', () => {
+        logWatchedTime(currentKid);
+    });
+    
+    confirmPasswordBtn.addEventListener('click', () => {
+        submitBonusTime(currentKid);
+    });
+    
+    cancelPasswordBtn.addEventListener('click', hidePasswordModal);
+    
+    closeModalBtn.addEventListener('click', hidePasswordModal);
+    
+    passwordModalOverlay.addEventListener('click', (event) => { 
+        if (event.target === passwordModalOverlay) { 
+            hidePasswordModal(); 
+        } 
+    });
+    
+    passwordInput.addEventListener('keydown', (event) => { 
+        if (event.key === 'Enter') { 
+            event.preventDefault(); 
+            confirmPasswordBtn.click(); 
+        } 
+    });
+
+    minutesWatchedInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            logTimeBtn.click(); 
+        }
+    });
+
+    // --- ПЕРВЫЙ ЗАПУСК ---
     const savedTheme = localStorage.getItem('theme') || 'light';
     applyTheme(savedTheme);
     fetchKidData(currentKid);
